@@ -149,4 +149,4 @@ class ImageUrl(APIView):
         except IOError:
             return Response({'message':'未找到图片'},status=status.HTTP_404_NOT_FOUND)  # 如果未找到图片，则返回 404
 
-# 批量创建物品/入库
+# 批量创建物品/入库.
