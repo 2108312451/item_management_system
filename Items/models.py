@@ -43,5 +43,5 @@ class Outbound(models.Model):
     brand = models.CharField(max_length=100, default='')  # 品牌
     numbers = models.IntegerField()  # 出库数量
     approval_classification = models.IntegerField()  # 物品等级
-    Reason_Outbound = models.IntegerField(default=0) #出库原因，正常删除还是报废(0删除/1报废)
+    Reason_Outbound = models.IntegerField(default=0) #出库原因，正常删除还是报废(1删除/0报废)
     times = models.CharField(max_length=50, default='0000-00-00 00:00') #出库时间

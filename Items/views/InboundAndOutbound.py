@@ -10,7 +10,8 @@ from django.http import FileResponse
 from PIL import Image
 import io
 from django.http import FileResponse
-import os
+from io import BytesIO
+from openpyxl import load_workbook
 
 # 单个
 class ItemOperateView(APIView):
@@ -150,3 +151,52 @@ class ImageUrl(APIView):
             return Response({'message':'未找到图片'},status=status.HTTP_404_NOT_FOUND)  # 如果未找到图片，则返回 404
 
 # 批量创建物品/入库.
+class MoreAdd(APIView):
+    def post(self,request):
+        try:
+            excel_file = request.FILES['file']
+            wb = load_workbook(excel_file)
+            sheet = wb.active
+
+            # 设置一个标志来跟踪当前行数
+            first_row = 0
+
+            for row in sheet.iter_rows(values_only=True):
+                if first_row<2:
+                    first_row += 1
+                    continue  # 跳过第一行
+
+                image_path = row[0]  # 图片文件路径
+
+                # 读取图片文件的二进制数据
+                with open(image_path, 'rb') as f:
+                    image_data = f.read()
+
+                # 将图片数据转换为文件对象
+                image_file = ContentFile(image_data)
+
+                # 保存图片文件到指定路径
+                file_path = 'static/images/' + row[1] + '.jpg'  # 保存路径
+                default_storage.save(file_path, image_file)
+
+                # 逐行读取数据并存储到数据库
+                data = {
+                    'item_name': row[1],
+                    'item_code': row[2],
+                    'value': row[3],
+                    'specifications': row[4],
+                    'category': row[5],
+                    'brand': row[6],
+                    'inventory': row[7],
+                    'campus': row[8],
+                    'location': row[9],
+                    'max_quantity': row[10],
+                    'instructions': row[11],
+                    'approval_classification': row[12],
+                }
+                obj = Items.objects.create(**data)
+                obj.save()
+
+            return Response({'ok_create': True},status=status.HTTP_200_OK)
+        except:
+            return Response({'message': False}, status=status.HTTP_400_BAD_REQUEST)

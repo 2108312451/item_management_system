@@ -5,4 +5,5 @@ urlpatterns = [
     path("comment/",Comment.CommentsView.as_view(),name='comment'),
     path("inboundoutbound/",InboundAndOutbound.ItemOperateView.as_view(),name='inboundoutbound'),
     path('images/<str:imagename>/', InboundAndOutbound.ImageUrl.as_view(), name='imageurl'),
+    path('additemmore/',InboundAndOutbound.MoreAdd.as_view(),name='additemmore')
 ]
