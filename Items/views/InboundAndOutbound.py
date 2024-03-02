@@ -83,7 +83,7 @@ class ItemOperateView(APIView):
                 outobj = Outbound.objects.create(item_name=obj.item_name,item_code=obj.item_code,
                                                  category=obj.category,brand=obj.brand,
                                                  numbers=1,approval_classification=obj.approval_classification,
-                                                 Reason_Outbound=request.data.get('Reason_Outbound'),times=time_str)
+                                                 Reason_Outbound=request.data.get('pk'),times=time_str)
                 outobj.save()
                 return Response({"ok_del":True},status=status.HTTP_200_OK)
             else:
@@ -101,12 +101,18 @@ class ItemOperateView(APIView):
             outobj = Outbound.objects.create(item_name=obj.item_name, item_code=obj.item_code,
                                              category=obj.category, brand=obj.brand,
                                              numbers=obj.inventory, approval_classification=obj.approval_classification,
-                                             Reason_Outbound=request.data.get('Reason_Outbound'), times=time_str)
+                                             Reason_Outbound=request.data.get('pk'), times=time_str)
             outobj.save()
             return Response({"ok_del": True}, status=status.HTTP_200_OK)
 
     #修改物品信息
     def put(self,request):
+        image_data = request.data.get('image')
+        # 将图片数据转换为文件对象
+        image_file = ContentFile(image_data.read())
+        # 保存图片文件到磁盘上的指定路径（比如 static/images 文件夹）
+        default_storage.save('static/images/' + request.data.get('item_name') + '.jpg', image_file)
+
         obj = Items.objects.get(id=request.data.get("id"))
         obj.item_name = request.data.get('item_name')
         obj.item_code = request.data.get('item_code')
@@ -119,7 +125,7 @@ class ItemOperateView(APIView):
         obj.location = request.data.get('location')
         obj.max_quantity = request.data.get('max_quantity')
         obj.instructions = request.data.get('instructions')
-        obj.pictureUrl = 0 # 图片地址（单独传入图片）
+        obj.pictureUrl = image_file # 图片地址（单独传入图片）
         obj.approval_classification = request.data.get('approval_classification')
 
         obj.save()

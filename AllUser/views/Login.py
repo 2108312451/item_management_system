@@ -36,9 +36,14 @@ class OrdinaryUserLoginView(APIView):
                 return Response({"ok_create": False,"message":"注册失败"}, status=status.HTTP_200_OK)
         # 登录
         elif request.data.get('pk') == 1:
-            user = OrdinaryUser.objects.get(username=request.data.get('username'))
+            try:
+                user = OrdinaryUser.objects.get(username=request.data.get('username'))
+            except:
+                return Response({"can_login": False, "message": "用户名错误"}, status=status.HTTP_200_OK)
             is_matched = check_password(request.data.get('password'), user.password)
             if is_matched:
+                if user.status == False:
+                    return Response({"can_login": False, "message": "账号禁止登录"}, status=status.HTTP_200_OK)
                 userdata = OrdinaryUserSerializers(instance=user,many=False)
                 return Response({"can_login": True,'userdata':userdata.data}, status=status.HTTP_200_OK)
             else:
@@ -73,9 +78,14 @@ class Regular_AdministratorLoginView(APIView):
                 return Response({"ok_create": False, "message": "注册失败"}, status=status.HTTP_200_OK)
         # 登录
         elif request.data.get('pk') == 1:
-            user = Regular_Administrator.objects.get(username=request.data.get('username'))
+            try:
+                user = Regular_Administrator.objects.get(username=request.data.get('username'))
+            except:
+                return Response({"can_login": False, "message": "用户名错误"}, status=status.HTTP_200_OK)
             is_matched = check_password(request.data.get('password'), user.password)
             if is_matched:
+                if user.status == False:
+                    return Response({"can_login": False, "message": "账号禁止登录"}, status=status.HTTP_200_OK)
                 userdata = Regular_AdministratorSerializers(instance=user, many=False)
                 return Response({"can_login": True,"userdata":userdata.data}, status=status.HTTP_200_OK)
             else:
@@ -86,16 +96,21 @@ class Regular_AdministratorLoginView(APIView):
 # 超管
 class Super_AdministratorLoginView(APIView):
     def post(self,request):
-        user = User.objects.get(username=request.data.get('username'))
+        try:
+            user = User.objects.get(username=request.data.get('username'))
+        except:
+            return Response({"can_login": False, "message": "用户名错误"}, status=status.HTTP_200_OK)
         is_matched = check_password(request.data.get('password'), user.password)
         if is_matched:
+            if user.is_active == False:
+                return Response({"can_login": False, "message": "账号禁止登录"}, status=status.HTTP_200_OK)
             # 创建
             is_exists = Super_Administrator.objects.filter(username=request.data.get('username')).exists()
             if is_exists:
                 pass
             else:
                 superuser = Super_Administrator.objects.create(username=request.data.get('username'),
-                                                               password=make_password(request.data.get('password')))
+                                                               password=make_password(request.data.get('password')),authid=user.id)
                 superuser.save()
             user = Super_Administrator.objects.get(username=request.data.get('username'))
             userdata = Super_AdministratorSerializers(instance=user, many=False)

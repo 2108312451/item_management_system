@@ -47,6 +47,7 @@ class Regular_Administrator(models.Model):
 
 # 超级管理员
 class Super_Administrator(models.Model):
+    authid = models.IntegerField(default=0) #auth表id
     realname = models.CharField(max_length=100, default='')  # 真实姓名
     username = models.CharField(max_length=100, default='')  # 用户名
     password = models.CharField(max_length=300, default='')  # 哈希密码
