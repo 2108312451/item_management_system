@@ -6,7 +6,6 @@ from Items.models import Items,Warehousing,Outbound
 from Items.serializers.ItemsDataSerializers import ItemsSerializers,WarehousingSerializers,OutboundSerializers
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-from django.http import FileResponse
 from PIL import Image
 import io
 from django.http import FileResponse

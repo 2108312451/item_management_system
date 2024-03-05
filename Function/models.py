@@ -35,8 +35,12 @@ class Approval(models.Model):
 
 
 # 归还物品
-
-
+class Returns(models.Model):
+    user_realname = models.CharField(max_length=50, default='')  # 归还者姓名
+    item_id = models.IntegerField(default=0)  # 归还物品ID
+    item_name = models.CharField(max_length=50, default='')  # 归还物品名称
+    number = models.IntegerField(default=0)  # 归还数量
+    time = models.CharField(max_length=50, default='0000-00-00 00:00')  # 借出时间
 
 
 # 收藏

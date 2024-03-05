@@ -3,7 +3,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.http import FileResponse
 import datetime
+import io
+from PIL import Image
 from Function.models import Lend,Approval
 from Function.serializers.LendSerializers import LendSerializers,ApprovalSerializers
 
@@ -115,6 +118,41 @@ class ApprovalView(APIView):
         approvaldata = ApprovalSerializers(instance=data,many=True)
         return Response({"data":approvaldata.data},status=status.HTTP_200_OK)
 
-# 获取借用归还上传图片
+# 获取借用上传图片
+class GetPicture(APIView):
+    def get(self,request):
+        try:
+            lendid = request.data.get('lendid')
+            image_path = f'static/images/{lendid}_lend.jpg'  # 图片文件路径
+            # 打开原始图片
+            image = Image.open(image_path)
+            width, height = image.size  # 获取原始图片的宽度和高度
 
-# 2/3级物品审批通过上传图片
+            # 计算目标宽度和高度为原来的一半
+            target_width = int(width * 1)
+            target_height = int(height * 1)
+            # 压缩图片
+            image = image.resize((target_width, target_height))
+            # 创建一个内存中的临时文件
+            output = io.BytesIO()
+            # 将压缩后的图片保存到临时文件
+            image.save(output, format='JPEG')
+            # 将临时文件对象移动到开头以便读取
+            output.seek(0)
+            # 返回压缩后的图片作为响应
+            return FileResponse(output, content_type='image/jpeg')
+        except IOError:
+            return Response({'message': '未找到图片'}, status=status.HTTP_404_NOT_FOUND)  # 如果未找到图片，则返回 404
+
+# 2/3级物品审批通过后上传图片
+class UploadImages(APIView):
+    def post(self,request):
+        lendid = request.data.get('lendid')
+        # 获取图片数据
+        image_data = request.data.get('image')
+        # 将图片数据转换为文件对象
+        image_file = ContentFile(image_data.read())
+        # 保存图片文件到磁盘上的指定路径（比如 static/images 文件夹）
+        default_storage.save('static/images/' + str(lendid) + '_lend.jpg', image_file)
+
+        return Response({"ok_lend": True}, status=status.HTTP_200_OK)
