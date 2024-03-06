@@ -45,65 +45,6 @@ class ItemOperateView(APIView):
         warehous.save()
         return Response({"ok_create": True}, status=status.HTTP_200_OK)
 
-    # 获取
-    def get(self,request):
-        # 物品表
-        if request.data.get("pk") == 0:
-            item = Items.objects.all()
-            itemdata = ItemsSerializers(instance=item,many=True)
-            return Response({"itemdata":itemdata.data}, status=status.HTTP_200_OK)
-        # 入库表
-        elif request.data.get("pk") == 1:
-            warehous = Warehousing.objects.all()
-            warehousdata = WarehousingSerializers(instance=warehous,many=True)
-            return Response({"itemdata": warehousdata.data}, status=status.HTTP_200_OK)
-        #出库表
-        elif request.data.get("pk") == 2:
-            outbound = Outbound.objects.all()
-            outbounddata = OutboundSerializers(instance=outbound,many=True)
-            return Response({"outbounddata": outbounddata.data}, status=status.HTTP_200_OK)
-        else:
-            return Response({"mesage": "pk值为空"}, status=status.HTTP_200_OK)
-
-    #删除物品/出库
-    def delete(self,request):
-        # 删除物品中的一个（报废）
-        if request.data.get("pk") == 0:
-            obj = Items.objects.get(id=request.data.get("id"))
-            if obj.inventory > 0:
-                obj.inventory -= 1
-                obj.save()
-
-                # 获取当前时间
-                current_time = datetime.datetime.now()
-                # 将时间转换为字符串
-                time_str = current_time.strftime('%Y-%m-%d %H:%M:%S')
-
-                outobj = Outbound.objects.create(item_name=obj.item_name,item_code=obj.item_code,
-                                                 category=obj.category,brand=obj.brand,
-                                                 numbers=1,approval_classification=obj.approval_classification,
-                                                 Reason_Outbound=request.data.get('pk'),times=time_str)
-                outobj.save()
-                return Response({"ok_del":True},status=status.HTTP_200_OK)
-            else:
-                return Response({"message":"库存不足"},status=status.HTTP_200_OK)
-        # 直接删除物品
-        elif request.data.get("pk") == 1:
-            obj = Items.objects.get(id=request.data.get("id"))
-            obj.delete()
-
-            # 获取当前时间
-            current_time = datetime.datetime.now()
-            # 将时间转换为字符串
-            time_str = current_time.strftime('%Y-%m-%d %H:%M:%S')
-
-            outobj = Outbound.objects.create(item_name=obj.item_name, item_code=obj.item_code,
-                                             category=obj.category, brand=obj.brand,
-                                             numbers=obj.inventory, approval_classification=obj.approval_classification,
-                                             Reason_Outbound=request.data.get('pk'), times=time_str)
-            outobj.save()
-            return Response({"ok_del": True}, status=status.HTTP_200_OK)
-
     #修改物品信息
     def put(self,request):
         image_data = request.data.get('image')
@@ -129,6 +70,69 @@ class ItemOperateView(APIView):
 
         obj.save()
         return Response({"ok_put":True},status=status.HTTP_200_OK)
+
+# 获取表数据
+class GetItemData(APIView):
+    def get(self,request,pk):
+        # 物品表
+        if pk == 0:
+            item = Items.objects.all()
+            itemdata = ItemsSerializers(instance=item,many=True)
+            return Response({"itemdata":itemdata.data}, status=status.HTTP_200_OK)
+        # 入库表
+        elif pk == 1:
+            warehous = Warehousing.objects.all()
+            warehousdata = WarehousingSerializers(instance=warehous,many=True)
+            return Response({"itemdata": warehousdata.data}, status=status.HTTP_200_OK)
+        #出库表
+        elif pk == 2:
+            outbound = Outbound.objects.all()
+            outbounddata = OutboundSerializers(instance=outbound,many=True)
+            return Response({"outbounddata": outbounddata.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({"mesage": "pk值为空"}, status=status.HTTP_200_OK)
+
+# 删除物品出库/报废
+class DeleteItem(APIView):
+
+    #删除物品/出库
+    def delete(self,request,pk,id):
+        # 删除物品中的一个（报废）
+        if pk == 0:
+            obj = Items.objects.get(id=id)
+            if obj.inventory > 0:
+                obj.inventory -= 1
+                obj.save()
+
+                # 获取当前时间
+                current_time = datetime.datetime.now()
+                # 将时间转换为字符串
+                time_str = current_time.strftime('%Y-%m-%d %H:%M:%S')
+
+                outobj = Outbound.objects.create(item_name=obj.item_name,item_code=obj.item_code,
+                                                 category=obj.category,brand=obj.brand,
+                                                 numbers=1,approval_classification=obj.approval_classification,
+                                                 Reason_Outbound=pk,times=time_str)
+                outobj.save()
+                return Response({"ok_del":True},status=status.HTTP_200_OK)
+            else:
+                return Response({"message":"库存不足"},status=status.HTTP_200_OK)
+        # 直接删除物品
+        elif pk == 1:
+            obj = Items.objects.get(id=id)
+            obj.delete()
+
+            # 获取当前时间
+            current_time = datetime.datetime.now()
+            # 将时间转换为字符串
+            time_str = current_time.strftime('%Y-%m-%d %H:%M:%S')
+
+            outobj = Outbound.objects.create(item_name=obj.item_name, item_code=obj.item_code,
+                                             category=obj.category, brand=obj.brand,
+                                             numbers=obj.inventory, approval_classification=obj.approval_classification,
+                                             Reason_Outbound=pk, times=time_str)
+            outobj.save()
+            return Response({"ok_del": True}, status=status.HTTP_200_OK)
 
 # 图片url
 class ImageUrl(APIView):

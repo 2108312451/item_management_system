@@ -94,9 +94,9 @@ class LendView(APIView):
         return Response({"ok_lend":True},status=status.HTTP_200_OK)
 
     # 用户查询自己已提交借用记录
-    def get(self,request):
-        if request.data.get('lenduser_realname'):
-            lendobj = Lend.objects.filter(lenduser_realname=request.data.get('lenduser_realname'))
+    def get(self,request,lenduser_realname):
+        if lenduser_realname != 'all':
+            lendobj = Lend.objects.filter(lenduser_realname=lenduser_realname)
             lenddata = LendSerializers(instance=lendobj,many=True)
             return Response({"lenddatas":lenddata.data},status=status.HTTP_200_OK)
         else:
@@ -146,11 +146,10 @@ class ApprovalView(APIView):
 
 # 获取借用上传图片
 class GetPicture(APIView):
-    def get(self,request):
+    def get(self,request,ges,id):
         try:
-            if request.data.get('lendid'):
-                lendid = request.data.get('lendid')
-                image_path = f'static/Lendimage/{lendid}_lend.jpg'  # 图片文件路径
+            if ges == 'lend':
+                image_path = f'static/Lendimage/{id}_lend.jpg'  # 图片文件路径
                 # 打开原始图片
                 image = Image.open(image_path)
                 width, height = image.size  # 获取原始图片的宽度和高度
@@ -169,8 +168,7 @@ class GetPicture(APIView):
                 # 返回压缩后的图片作为响应
                 return FileResponse(output, content_type='image/jpeg')
             else:
-                returnid = request.data.get('returnid')
-                image_path = f'static/Retutnimage/{returnid}_return.jpg'  # 图片文件路径
+                image_path = f'static/Retutnimage/{id}_return.jpg'  # 图片文件路径
                 # 打开原始图片
                 image = Image.open(image_path)
                 width, height = image.size  # 获取原始图片的宽度和高度

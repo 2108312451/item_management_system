@@ -8,8 +8,8 @@ from AllUser.serializers.UserDataSerializers import OrdinaryUserSerializers,Regu
 
 # 普通用户
 class OrdinaryUsers(APIView):
-    def get(self,request):
-        obj = OrdinaryUser.objects.get(id=request.data.get('id'))
+    def get(self,request,id):
+        obj = OrdinaryUser.objects.get(id=id)
         data = OrdinaryUserSerializers(instance=obj,many=False)
         return Response({"userdata":data.data},status=status.HTTP_200_OK)
     def put(self,request):
@@ -22,9 +22,9 @@ class OrdinaryUsers(APIView):
         user.status = request.data.get('status')
         user.save()
         return Response({"ok_modify": True}, status=status.HTTP_200_OK)
-    def delete(self,request):
+    def delete(self,request,id):
         try:
-            user = OrdinaryUser.objects.get(id=request.data.get('id'))
+            user = OrdinaryUser.objects.get(id=id)
         except:
             return Response({"can_login": False, "message": "用户不存在"}, status=status.HTTP_200_OK)
         user.delete()
@@ -32,9 +32,9 @@ class OrdinaryUsers(APIView):
 
 # 普通管理员
 class RegularAdministrator(APIView):
-    def get(self,request):
+    def get(self,request,id):
         try:
-            obj = Regular_Administrator.objects.get(id=request.data.get('id'))
+            obj = Regular_Administrator.objects.get(id=id)
         except:
             return Response({"can_login": False, "message": "用户不存在"}, status=status.HTTP_200_OK)
         data = Regular_AdministratorSerializers(instance=obj,many=False)
@@ -51,9 +51,9 @@ class RegularAdministrator(APIView):
         user.status = request.data.get('status')
         user.save()
         return Response({"ok_modify": True}, status=status.HTTP_200_OK)
-    def delete(self,request):
+    def delete(self,request,id):
         try:
-            user = Regular_Administrator.objects.get(id=request.data.get('id'))
+            user = Regular_Administrator.objects.get(id=id)
         except:
             return Response({"can_login": False, "message": "用户不存在"}, status=status.HTTP_200_OK)
         user.delete()
@@ -61,9 +61,9 @@ class RegularAdministrator(APIView):
 
 # 超管
 class SuperAdministrator(APIView):
-    def get(self,request):
+    def get(self,request,id):
         try:
-            obj = Super_Administrator.objects.get(id=request.data.get('id'))
+            obj = Super_Administrator.objects.get(id=id)
         except:
             return Response({"can_login": False, "message": "用户不存在"}, status=status.HTTP_200_OK)
         data = Super_AdministratorSerializers(instance=obj,many=False)
@@ -85,9 +85,9 @@ class SuperAdministrator(APIView):
         user.save()
         authuser.save()
         return Response({"ok_modify": True}, status=status.HTTP_200_OK)
-    def delete(self,request):
+    def delete(self,request,id):
         try:
-            user = Super_Administrator.objects.get(id=request.data.get('id'))
+            user = Super_Administrator.objects.get(id=id)
             authuser = User.objects.get(id=user.authid)
         except:
             return Response({"can_login": False, "message": "用户不存在"}, status=status.HTTP_200_OK)

@@ -20,15 +20,15 @@ class ReturnView(APIView):
         # 将图片数据转换为文件对象
         image_file = ContentFile(image_data.read())
         # 保存图片文件到磁盘上的指定路径
-        default_storage.save('static/Retutnimage/' + str(request.data.get('item_id')) + '_return.jpg', image_file)
+        default_storage.save('static/Retutnimage/' + str(re.id) + '_return.jpg', image_file)
 
         itemobj = Items.objects.get(id=request.data.get('item_id'))
         itemobj.inventory += int(request.data.get('number'))
         itemobj.save()
 
         return Response({"ok_return":True},status=status.HTTP_200_OK)
-    def get(self,request):
-        if request.data.get('user_realname'):
+    def get(self,request,user_realname):
+        if user_realname != 'all':
             try:
                 redata = Returns.objects.filter(user_realname=request.data.get('user_realname'))
                 datas = ReturnSerializers(instance=redata,many=True)
