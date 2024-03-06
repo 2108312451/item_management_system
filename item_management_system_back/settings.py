@@ -27,6 +27,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# class CorsMiddleware:
+#     def __init__(self, get_response):
+#         self.get_response = get_response
+#
+#     def __call__(self, request):
+#         response = self.get_response(request)
+#         response["Access-Control-Allow-Origin"] = "*"  # 也可以指定允许的域名，例如 "http://example.com"
+#         response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+#         return response
 
 # Application definition
 
@@ -53,6 +62,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
+    # 'item_management_system_back.cors_middleware.CorsMiddleware',  # 添加这一行
 ]
 
 ROOT_URLCONF = 'item_management_system_back.urls'

@@ -9,6 +9,7 @@ import io
 from PIL import Image
 from Function.models import Lend,Approval
 from Function.serializers.LendSerializers import LendSerializers,ApprovalSerializers
+from Items.models import Items
 
 # 借用
 class LendView(APIView):
@@ -19,6 +20,16 @@ class LendView(APIView):
         time_str = current_time.strftime('%Y-%m-%d %H:%M:%S')
         # 物品等级判断，1级直接上传图片
         if request.data.get('lenditem_grade') == '1':
+            itemobj = Items.objects.get(id=request.data.get('lenditem_id'))
+            x = int(request.data.get('lendnumber'))
+            if x > itemobj.inventory:
+                return Response({"message":"库存不足","ok_lend":False},status=status.HTTP_200_OK)
+            if x > itemobj.max_quantity:
+                return Response({"message": "超出最大借用数量", "ok_lend": False}, status=status.HTTP_200_OK)
+
+            itemobj.inventory -= x
+            itemobj.save()
+
             lend = Lend.objects.create(lenduser_realname=request.data.get('lenduser_realname'),
                                        lenditem_id=request.data.get('lenditem_id'),
                                        lenditem_name=request.data.get('lenditem_name'),
@@ -32,7 +43,7 @@ class LendView(APIView):
             # 将图片数据转换为文件对象
             image_file = ContentFile(image_data.read())
             # 保存图片文件到磁盘上的指定路径（比如 static/images 文件夹）
-            default_storage.save('static/images/' + str(lend.id) + '_lend.jpg', image_file)
+            default_storage.save('static/Lendimage/' + str(lend.id) + '_lend.jpg', image_file)
 
             #审批
             approval = Approval.objects.create(
@@ -49,6 +60,16 @@ class LendView(APIView):
             approval.save()
 
         elif request.data.get('lenditem_grade') == '2' or request.data.get('lenditem_grade') == '3':
+
+            itemobj = Items.objects.get(id=request.data.get('lenditem_id'))
+            x = int(request.data.get('lendnumber'))
+            if x > itemobj.inventory:
+                return Response({"message": "库存不足", "ok_lend": False}, status=status.HTTP_200_OK)
+            if x > itemobj.max_quantity:
+                return Response({"message": "超出最大借用数量", "ok_lend": False}, status=status.HTTP_200_OK)
+            itemobj.inventory -= x
+            itemobj.save()
+
             lend = Lend.objects.create(lenduser_realname=request.data.get('lenduser_realname'),
                                        lenditem_id=request.data.get('lenditem_id'),
                                        lenditem_name=request.data.get('lenditem_name'),
@@ -74,9 +95,14 @@ class LendView(APIView):
 
     # 用户查询自己已提交借用记录
     def get(self,request):
-        lendobj = Lend.objects.filter(lenduser_realname=request.data.get('lenduser_realname'))
-        lenddata = LendSerializers(instance=lendobj,many=True)
-        return Response({"lenddatas":lenddata.data},status=status.HTTP_200_OK)
+        if request.data.get('lenduser_realname'):
+            lendobj = Lend.objects.filter(lenduser_realname=request.data.get('lenduser_realname'))
+            lenddata = LendSerializers(instance=lendobj,many=True)
+            return Response({"lenddatas":lenddata.data},status=status.HTTP_200_OK)
+        else:
+            lendobj = Lend.objects.all()
+            lenddata = LendSerializers(instance=lendobj, many=True)
+            return Response({"lenddatas": lenddata.data}, status=status.HTTP_200_OK)
 
 # 管理员审批
 class ApprovalView(APIView):
@@ -122,25 +148,46 @@ class ApprovalView(APIView):
 class GetPicture(APIView):
     def get(self,request):
         try:
-            lendid = request.data.get('lendid')
-            image_path = f'static/images/{lendid}_lend.jpg'  # 图片文件路径
-            # 打开原始图片
-            image = Image.open(image_path)
-            width, height = image.size  # 获取原始图片的宽度和高度
+            if request.data.get('lendid'):
+                lendid = request.data.get('lendid')
+                image_path = f'static/Lendimage/{lendid}_lend.jpg'  # 图片文件路径
+                # 打开原始图片
+                image = Image.open(image_path)
+                width, height = image.size  # 获取原始图片的宽度和高度
 
-            # 计算目标宽度和高度为原来的一半
-            target_width = int(width * 1)
-            target_height = int(height * 1)
-            # 压缩图片
-            image = image.resize((target_width, target_height))
-            # 创建一个内存中的临时文件
-            output = io.BytesIO()
-            # 将压缩后的图片保存到临时文件
-            image.save(output, format='JPEG')
-            # 将临时文件对象移动到开头以便读取
-            output.seek(0)
-            # 返回压缩后的图片作为响应
-            return FileResponse(output, content_type='image/jpeg')
+                # 计算目标宽度和高度为原来的一半
+                target_width = int(width * 1)
+                target_height = int(height * 1)
+                # 压缩图片
+                image = image.resize((target_width, target_height))
+                # 创建一个内存中的临时文件
+                output = io.BytesIO()
+                # 将压缩后的图片保存到临时文件
+                image.save(output, format='JPEG')
+                # 将临时文件对象移动到开头以便读取
+                output.seek(0)
+                # 返回压缩后的图片作为响应
+                return FileResponse(output, content_type='image/jpeg')
+            else:
+                returnid = request.data.get('returnid')
+                image_path = f'static/Retutnimage/{returnid}_return.jpg'  # 图片文件路径
+                # 打开原始图片
+                image = Image.open(image_path)
+                width, height = image.size  # 获取原始图片的宽度和高度
+
+                # 计算目标宽度和高度为原来的一半
+                target_width = int(width * 1)
+                target_height = int(height * 1)
+                # 压缩图片
+                image = image.resize((target_width, target_height))
+                # 创建一个内存中的临时文件
+                output = io.BytesIO()
+                # 将压缩后的图片保存到临时文件
+                image.save(output, format='JPEG')
+                # 将临时文件对象移动到开头以便读取
+                output.seek(0)
+                # 返回压缩后的图片作为响应
+                return FileResponse(output, content_type='image/jpeg')
         except IOError:
             return Response({'message': '未找到图片'}, status=status.HTTP_404_NOT_FOUND)  # 如果未找到图片，则返回 404
 
@@ -153,6 +200,6 @@ class UploadImages(APIView):
         # 将图片数据转换为文件对象
         image_file = ContentFile(image_data.read())
         # 保存图片文件到磁盘上的指定路径（比如 static/images 文件夹）
-        default_storage.save('static/images/' + str(lendid) + '_lend.jpg', image_file)
+        default_storage.save('static/Lendimage/' + str(lendid) + '_lend.jpg', image_file)
 
         return Response({"ok_lend": True}, status=status.HTTP_200_OK)
