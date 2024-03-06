@@ -6,7 +6,7 @@ class Items(models.Model):
     item_code = models.CharField(max_length=100,default='') #编号
     value = models.DecimalField(max_digits=10, decimal_places=2) #价值(整数/浮点)
     specifications = models.TextField() #规格
-    category = models.CharField(max_length=100,default='') #类别
+    category = models.CharField(max_length=100,default='') #类别(消耗品，普通物品，设备)
     brand = models.CharField(max_length=100,default='') #品牌
     inventory = models.IntegerField() #库存
     campus = models.IntegerField() #校区 1&2

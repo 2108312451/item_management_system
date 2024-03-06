@@ -8,7 +8,7 @@ class Notice(models.Model):
     adminname = models.CharField(max_length=50,default='') #发布者姓名
     times = models.CharField(max_length=50,default='0000-00-00 00:00') #时间
 
-#借出物品
+#借用物品
 class Lend(models.Model):
     lenduser_realname = models.CharField(max_length=50,default='') #借用着姓名
     lenditem_id= models.IntegerField(default=0) #借出物品ID
@@ -23,7 +23,7 @@ class Lend(models.Model):
 
 # 借出审批表
 class Approval(models.Model):
-    lenduser_realname = models.CharField(max_length=50, default='')  # 借用着姓名
+    lenduser_realname = models.CharField(max_length=50, default='')  # 借用者姓名
     lenditem_id = models.IntegerField(default=0)  # 借出物品ID
     lenditem_name = models.CharField(max_length=50, default='')  # 借出物品名称
     lendnumber = models.IntegerField(default=0)  # 借出数量
@@ -40,7 +40,7 @@ class Returns(models.Model):
     item_id = models.IntegerField(default=0)  # 归还物品ID
     item_name = models.CharField(max_length=50, default='')  # 归还物品名称
     number = models.IntegerField(default=0)  # 归还数量
-    time = models.CharField(max_length=50, default='0000-00-00 00:00')  # 借出时间
+    time = models.CharField(max_length=50, default='0000-00-00 00:00')  # 归还时间
 
 
 # 收藏
@@ -68,3 +68,22 @@ class Feedback(models.Model):
     text = models.TextField(default='')  # 反馈问题
     times = models.CharField(max_length=50, default='0000-00-00 00:00')  # 时间
     statics = models.BooleanField(default=False)  # 状态(未处理/已经处理)
+
+# 对话内容
+class HelpCenterContent(models.Model):
+    text = models.TextField(default='') #内容
+    identity = models.CharField(max_length=10,default='') #该消息所属对象（管理员/用户）
+    times = models.CharField(max_length=50, default='0000-00-00 00:00')  #发送消息时间
+    HelpCenterid = models.IntegerField(default=0) #那次对话id
+
+# 记录每段对话
+class HelpCenterSave(models.Model):
+     #主键id为每段对话id
+    firsttext = models.TextField(default='') #第一句话
+    userid = models.IntegerField(default=0) #用户id
+    username = models.CharField(max_length=50, default='') #用户姓名
+    handleadminid = models.IntegerField(default=0) #处理改对话管理员id
+    handleadmin = models.CharField(max_length=50, default='') #处理改对话管理员姓名
+    times = models.CharField(max_length=50, default='0000-00-00 00:00')  #对话生成时间
+    statics = models.BooleanField(default=False)  # 对话是否完成
+

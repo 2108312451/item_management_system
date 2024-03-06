@@ -1,5 +1,5 @@
 from django.urls import path, include
-from Function.views import Notices,Lends,Returns,Collections,RepairAndFeedback
+from Function.views import Notices,Lends,Returns,Collections,RepairAndFeedback,HelpCenters
 
 urlpatterns = [
     path("notice/",Notices.NoticeView.as_view(),name='notice'),
@@ -19,4 +19,11 @@ urlpatterns = [
     #反馈
     path("feedback/",RepairAndFeedback.FeedbackView.as_view(),name='Feedback'),
     path("feedback/<str:username>",RepairAndFeedback.FeedbackView.as_view(),name='Feedback'),
+#帮助中心
+    path("userhelpcenter/",HelpCenters.UserHelpCenterView.as_view(),name='userhelpcenter'),
+    path("userhelpcenter/<int:userid>/<str:username>",HelpCenters.UserHelpCenterView.as_view(),name='userhelpcenter'), #获取
+    path("userhelpcenter/<int:id>",HelpCenters.UserHelpCenterView.as_view(),name='userhelpcenter'), #记录删除
+    path("gettext/<int:id>",HelpCenters.GetText.as_view(),name='gettext'), #获取对话详情
+    path("adminhelpcenter/",HelpCenters.AdminHelpCenterView.as_view(),name='adminhelpcenter'), #管理员发送消息
+    path("adminhelpcenter/<int:adminid>/<str:adminname>",HelpCenters.AdminHelpCenterView.as_view(),name='adminhelpcenter'),
 ]
