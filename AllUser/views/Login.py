@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password,check_password
+from rest_framework_simplejwt.tokens import RefreshToken
 import random
 from AllUser.models import OrdinaryUser,Regular_Administrator,Super_Administrator,Codes
 from AllUser.serializers.UserDataSerializers import OrdinaryUserSerializers,Regular_AdministratorSerializers,Super_AdministratorSerializers
@@ -45,7 +46,11 @@ class OrdinaryUserLoginView(APIView):
                 if user.status == False:
                     return Response({"can_login": False, "message": "账号禁止登录"}, status=status.HTTP_200_OK)
                 userdata = OrdinaryUserSerializers(instance=user,many=False)
-                return Response({"can_login": True,'userdata':userdata.data}, status=status.HTTP_200_OK)
+                # 用户验证成功，生成 JWT 令牌
+                refresh = RefreshToken.for_user(user)
+                access_token = str(refresh.access_token)
+
+                return Response({"can_login": True,'token': access_token,'userdata':userdata.data}, status=status.HTTP_200_OK)
             else:
                 return Response({"can_login": False, "message": "密码错误"}, status=status.HTTP_200_OK)
         else:
@@ -87,7 +92,10 @@ class Regular_AdministratorLoginView(APIView):
                 if user.status == False:
                     return Response({"can_login": False, "message": "账号禁止登录"}, status=status.HTTP_200_OK)
                 userdata = Regular_AdministratorSerializers(instance=user, many=False)
-                return Response({"can_login": True,"userdata":userdata.data}, status=status.HTTP_200_OK)
+                # 用户验证成功，生成 JWT 令牌
+                refresh = RefreshToken.for_user(user)
+                access_token = str(refresh.access_token)
+                return Response({"can_login": True,'token': access_token,"userdata":userdata.data}, status=status.HTTP_200_OK)
             else:
                 return Response({"can_login": False, "message": "密码错误"}, status=status.HTTP_200_OK)
         else:
@@ -114,6 +122,9 @@ class Super_AdministratorLoginView(APIView):
                 superuser.save()
             user = Super_Administrator.objects.get(username=request.data.get('username'))
             userdata = Super_AdministratorSerializers(instance=user, many=False)
-            return Response({"can_login": True,"userdata":userdata.data}, status=status.HTTP_200_OK)
+            # 用户验证成功，生成 JWT 令牌
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+            return Response({"can_login": True,'token': access_token,"userdata":userdata.data}, status=status.HTTP_200_OK)
         else:
             return Response({"can_login": False, "message": "密码错误"}, status=status.HTTP_200_OK)
