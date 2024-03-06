@@ -1,5 +1,5 @@
 from django.urls import path, include
-from Function.views import Notices,Lends,Returns,Collections
+from Function.views import Notices,Lends,Returns,Collections,RepairAndFeedback
 
 urlpatterns = [
     path("notice/",Notices.NoticeView.as_view(),name='notice'),
@@ -13,4 +13,10 @@ urlpatterns = [
     path("collection/",Collections.CollectionView.as_view(),name='collection'),
     path("collection/<int:id>",Collections.CollectionView.as_view(),name='collection'),
     path("collection/<str:username>",Collections.CollectionView.as_view(),name='collection'),
+    #报修
+    path("repairs/",RepairAndFeedback.RepairsView.as_view(),name='Repairs'),
+    path("repairs/<str:username>",RepairAndFeedback.RepairsView.as_view(),name='Repairs'),
+    #反馈
+    path("feedback/",RepairAndFeedback.FeedbackView.as_view(),name='Feedback'),
+    path("feedback/<str:username>",RepairAndFeedback.FeedbackView.as_view(),name='Feedback'),
 ]

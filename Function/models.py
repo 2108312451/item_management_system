@@ -48,3 +48,23 @@ class Collections(models.Model):
     item_id = models.IntegerField(default=0)  # 物品ID
     item_name = models.CharField(max_length=50, default='')  #物品名称
     username = models.CharField(max_length=50, default='')  # 用户姓名
+
+# 报修（设备）
+class Repairs(models.Model):
+    item_id = models.IntegerField(default=0)  # 设备ID
+    item_name = models.CharField(max_length=50, default='')  # 设备名称
+    adress = models.CharField(max_length=50, default='')  # 设备地址
+    username = models.CharField(max_length=50, default='')  # 申报人姓名
+    text = models.TextField(default='') # 维修问题
+    times = models.CharField(max_length=50, default='0000-00-00 00:00')  #时间
+    statics = models.BooleanField(default=False) #维修状态(未维修/已经处理)
+
+# 反馈
+class Feedback(models.Model):
+    item_id = models.IntegerField(default=0)  # 物品ID
+    item_name = models.CharField(max_length=50, default='')  # 物品名称
+    adress = models.CharField(max_length=50, default='')  # 物品地址
+    username = models.CharField(max_length=50, default='')  # 反馈人姓名
+    text = models.TextField(default='')  # 反馈问题
+    times = models.CharField(max_length=50, default='0000-00-00 00:00')  # 时间
+    statics = models.BooleanField(default=False)  # 状态(未处理/已经处理)
