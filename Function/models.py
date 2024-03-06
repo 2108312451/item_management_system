@@ -44,3 +44,7 @@ class Returns(models.Model):
 
 
 # 收藏
+class Collections(models.Model):
+    item_id = models.IntegerField(default=0)  # 物品ID
+    item_name = models.CharField(max_length=50, default='')  #物品名称
+    username = models.CharField(max_length=50, default='')  # 用户姓名
