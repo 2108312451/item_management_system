@@ -17,7 +17,6 @@ class UserHelpCenterView(APIView):
             obj.save()
             objs = HelpCenterContent.objects.create(text=request.data.get('text'),identity='用户',times=time_str,HelpCenterid=obj.id)
             objs.save()
-            #
             return Response({"ok":True,"talkid":obj.id},status=status.HTTP_200_OK)
         # 继续历史对话
         elif request.data.get('pk') == 1:
@@ -40,8 +39,8 @@ class UserHelpCenterView(APIView):
     # 删除历史对话
     def delete(self,request,id):
         obj = HelpCenterSave.objects.get(id=id)
-        obj.userid = 0
-        obj.username = ''
+        obj.userid = -1
+        obj.username = -1
         obj.save()
         return Response({"ok": True}, status=status.HTTP_200_OK)
 
@@ -75,7 +74,7 @@ class AdminHelpCenterView(APIView):
         return Response({"ok": True}, status=status.HTTP_200_OK)
     def delete(self,request,id):
         obj = HelpCenterSave.objects.get(id=id)
-        obj.handleadminid = 0
-        obj.handleadmin = ''
+        obj.handleadminid = -1
+        obj.handleadmin = -1
         obj.save()
         return Response({"ok": True}, status=status.HTTP_200_OK)

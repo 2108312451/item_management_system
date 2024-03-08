@@ -1,5 +1,5 @@
 from django.urls import path, include
-from Function.views import Notices,Lends,Returns,Collections,RepairAndFeedback,HelpCenters
+from Function.views import Notices,Lends,Returns,Collections,RepairAndFeedback,HelpCenters,Equipment
 
 urlpatterns = [
     path("notice/",Notices.NoticeView.as_view(),name='notice'),
@@ -22,8 +22,15 @@ urlpatterns = [
 #帮助中心
     path("userhelpcenter/",HelpCenters.UserHelpCenterView.as_view(),name='userhelpcenter'),
     path("userhelpcenter/<int:userid>/<str:username>",HelpCenters.UserHelpCenterView.as_view(),name='userhelpcenter'), #获取
-    path("userhelpcenter/<int:id>",HelpCenters.UserHelpCenterView.as_view(),name='userhelpcenter'), #记录删除
+    path("userhelpcenter/<int:id>",HelpCenters.UserHelpCenterView.as_view(),name='deluserhelpcenter'), #记录删除
     path("gettext/<int:id>",HelpCenters.GetText.as_view(),name='gettext'), #获取对话详情
     path("adminhelpcenter/",HelpCenters.AdminHelpCenterView.as_view(),name='adminhelpcenter'), #管理员发送消息
-    path("adminhelpcenter/<int:adminid>/<str:adminname>",HelpCenters.AdminHelpCenterView.as_view(),name='adminhelpcenter'),
+    path("adminhelpcenter/<int:adminid>/<str:adminname>",HelpCenters.AdminHelpCenterView.as_view(),name='adminhelpcenter'), #获取
+    path("adminhelpcenter/<int:id>",HelpCenters.AdminHelpCenterView.as_view(),name='deladminhelpcenter'), #记录删除
+#设备预约
+    path("postequipment/",Equipment.SubmitApplication.as_view(),name='postequipment'), #提交
+    path("getequipment/<str:username>",Equipment.SubmitApplication.as_view(),name='getequipment'), #获取
+    path("equipmentapproval/",Equipment.ApprovalView.as_view(),name='equipmentapproval'), #审批
+    path("equipmentpic/", Equipment.UploadImages.as_view(), name='equipmentpic'),  # 设备上传图片
+    path("getequipmentpic/<int:id>", Equipment.GetPicture.as_view(), name='getequipmentpic'),  # 获取设备上传图片
 ]
