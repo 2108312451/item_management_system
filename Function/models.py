@@ -87,3 +87,58 @@ class HelpCenterSave(models.Model):
     times = models.CharField(max_length=50, default='0000-00-00 00:00')  #对话生成时间
     statics = models.BooleanField(default=False)  # 对话是否完成
 
+
+# 设备预约
+class EquipmentTimes(models.Model):
+    item_id = models.IntegerField(default=0)  # 设备ID
+    item_name = models.CharField(max_length=50, default='')  # 设备名称
+    adress = models.IntegerField(default=0)  # 设备地址 (校区1/2)
+    username = models.CharField(max_length=50, default='') #用户姓名
+    begintime = models.CharField(max_length=50, default='0000-00-00 00:00')  #预约时间
+    longtime = models.IntegerField(default=0)  #预约时长(xx小时)
+    item_grade = models.IntegerField(default=0)  # 设备等级
+    approval_progress = models.CharField(max_length=50, default='0%')  # 进度
+    privilege_level = models.IntegerField(default=-1)  # 已审批管理员的等级
+
+# 设备预约管理员审批
+class EquipmentApproval(models.Model):
+    item_id = models.IntegerField(default=0)  # 设备ID
+    item_name = models.CharField(max_length=50, default='')  # 设备名称
+    adress = models.IntegerField(default=0)  # 设备地址 (校区1/2)
+    username = models.CharField(max_length=50, default='')  # 用户姓名
+    begintime = models.CharField(max_length=50, default='0000-00-00 00:00')  # 预约时间
+    longtime = models.IntegerField(default=0)  # 预约时长(xx小时)
+    item_grade = models.IntegerField(default=0)  # 设备等级
+    approval_progress = models.BooleanField(default=False)  # 审批状态
+    equipmenttimes = models.ForeignKey(EquipmentTimes, on_delete=models.CASCADE)  # 关联EquipmentTimes表的id
+
+# 时间段（未来5天，每台设备5条记录）
+class Appointment(models.Model):
+    item_id = models.IntegerField(default=0)  # 设备ID
+    item_name = models.CharField(max_length=50, default='')  # 设备名称
+    time = models.CharField(max_length=50, default='0000-00-00')  #时间
+    day = models.IntegerField(default=0) #第几天
+    time0 = models.BooleanField(default=False)  # 24(0:00)-1:00
+    time1 = models.BooleanField(default=False) #1-2
+    time2 = models.BooleanField(default=False) # 2-3
+    time3 = models.BooleanField(default=False) #3-4
+    time4 = models.BooleanField(default=False)
+    time5 = models.BooleanField(default=False)
+    time6 = models.BooleanField(default=False)
+    time7 = models.BooleanField(default=False)
+    time8 = models.BooleanField(default=False)
+    time9 = models.BooleanField(default=False)
+    time10 = models.BooleanField(default=False)
+    time11 = models.BooleanField(default=False)
+    time12 = models.BooleanField(default=False)
+    time13 = models.BooleanField(default=False)
+    time14 = models.BooleanField(default=False)
+    time15 = models.BooleanField(default=False)
+    time16 = models.BooleanField(default=False)
+    time17 = models.BooleanField(default=False)
+    time18 = models.BooleanField(default=False)
+    time19 = models.BooleanField(default=False)
+    time20 = models.BooleanField(default=False)
+    time21 = models.BooleanField(default=False)
+    time22 = models.BooleanField(default=False)
+    time23 = models.BooleanField(default=False)

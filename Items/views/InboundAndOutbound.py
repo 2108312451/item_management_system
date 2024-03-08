@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 import datetime
 from Items.models import Items,Warehousing,Outbound
+from Function.models import Appointment
 from Items.serializers.ItemsDataSerializers import ItemsSerializers,WarehousingSerializers,OutboundSerializers
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -43,6 +44,18 @@ class ItemOperateView(APIView):
                                               times=time_str)
 
         warehous.save()
+        if request.data.get('category') == '设备':
+            # 获取当前日期
+            current_date = datetime.datetime.now().date()
+            # 创建未来5天预约时间段
+            for i in range(1,6):
+                # 将日期加一天
+                next_day = current_date + datetime.timedelta(days=i)
+                # 将日期转换为字符串
+                date_str = next_day.strftime('%Y-%m-%d')
+                obj = Appointment.objects.create(item_id=item.id,item_name=item.item_name,time=date_str,day=i)
+                obj.save()
+
         return Response({"ok_create": True}, status=status.HTTP_200_OK)
 
     #修改物品信息
