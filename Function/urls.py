@@ -28,9 +28,9 @@ urlpatterns = [
     path("adminhelpcenter/<int:adminid>/<str:adminname>",HelpCenters.AdminHelpCenterView.as_view(),name='adminhelpcenter'), #获取
     path("adminhelpcenter/<int:id>",HelpCenters.AdminHelpCenterView.as_view(),name='deladminhelpcenter'), #记录删除
 #设备预约
-    path("postequipment/",Equipment.SubmitApplication.as_view(),name='postequipment'), #提交
-    path("getequipment/<str:username>",Equipment.SubmitApplication.as_view(),name='getequipment'), #获取
+    path("equipment/",Equipment.SubmitApplication.as_view(),name='postequipment'), #提交
+    path("equipment/<str:username>",Equipment.SubmitApplication.as_view(),name='getequipment'), #获取
     path("equipmentapproval/",Equipment.ApprovalView.as_view(),name='equipmentapproval'), #审批
     path("equipmentpic/", Equipment.UploadImages.as_view(), name='equipmentpic'),  # 设备上传图片
-    path("getequipmentpic/<int:id>", Equipment.GetPicture.as_view(), name='getequipmentpic'),  # 获取设备上传图片
+    path("equipmentpic/<int:id>", Equipment.GetPicture.as_view(), name='getequipmentpic'),  # 获取设备上传图片
 ]

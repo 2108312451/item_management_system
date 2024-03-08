@@ -26,13 +26,15 @@ class SubmitApplication(APIView):
         # 将结果转换为字符串格式
         time_strs = new_time.strftime('%Y-%m-%d')
 
+        time_strs = '2024-03-10'
+
         # 时间更迭
         one = Appointment.objects.get(item_id=request.data.get('item_id'),item_name=request.data.get('item_name'),day=1)
         if one.time != time_strs:
             date_obj1 = datetime.datetime.strptime(one.time, '%Y-%m-%d').date()
             date_obj2 = datetime.datetime.strptime(time_str, '%Y-%m-%d').date()
             # 计算两个日期之间的差异
-            diff = (date_obj2 - date_obj1).days
+            diff = (date_obj1 - date_obj2).days
 
             #删除旧日期
             for i in range(1,diff+1):
@@ -44,18 +46,18 @@ class SubmitApplication(APIView):
                 try:
                     data = Appointment.objects.get(item_id=request.data.get('item_id'),item_name=request.data.get('item_name'),day=i+diff)
                     data.day = i
-                    # 将字符串解析为日期对象
-                    current_time = datetime.strptime(data.time, '%Y-%m-%d')
-                    # 定义一个 timedelta 对象，表示要加减的天数
-                    delta = timedelta(days=-diff)  # 加5天，如果要减去天数，将days参数改为负数即可
-                    # 对日期对象进行加减操作
-                    new_time = current_time + delta
-                    # 将结果转换为字符串格式
-                    new_time_str = new_time.strftime('%Y-%m-%d')
-                    data.time = new_time_str
+                    # # 将字符串解析为日期对象
+                    # current_time = datetime.datetime.strptime(data.time, '%Y-%m-%d')
+                    # # 定义一个 timedelta 对象，表示要加减的天数
+                    # delta = timedelta(days=-diff)  # 加5天，如果要减去天数，将days参数改为负数即可
+                    # # 对日期对象进行加减操作
+                    # new_time = current_time + delta
+                    # # 将结果转换为字符串格式
+                    # new_time_str = new_time.strftime('%Y-%m-%d')
+                    # data.time = new_time_str
                     data.save()
                 except:
-                    current_time = datetime.strptime(time_str, '%Y-%m-%d')
+                    current_time = datetime.datetime.strptime(time_str, '%Y-%m-%d')
                     delta = timedelta(days=i)
                     newdata = current_time + delta
                     new_time_str = newdata.strftime('%Y-%m-%d')
@@ -90,13 +92,21 @@ class SubmitApplication(APIView):
             daydata.save()
 
             # 管理员审批表
-            objs = EquipmentTimes.objects.create(item_id=item_id,item_name=item_name,adress=adress,username=username,begintime=begintime,longtime=longtime,item_grade=item_grade)
-            objs.save()
             if item_grade != 1:
+                objs = EquipmentTimes.objects.create(item_id=item_id, item_name=item_name, adress=adress,
+                                                     username=username,
+                                                     begintime=begintime, longtime=longtime, item_grade=item_grade)
+                objs.save()
                 obj = EquipmentApproval.objects.create(item_id=item_id, item_name=item_name, adress=adress,
                                                        username=username, begintime=begintime, longtime=longtime,
-                                                       item_grade=item_grade)
+                                                       item_grade=item_grade, equipmenttimes=objs)
                 obj.save()
+            else:
+                objs = EquipmentTimes.objects.create(item_id=item_id, item_name=item_name, adress=adress,
+                                                     username=username,
+                                                     begintime=begintime, longtime=longtime, item_grade=item_grade,
+                                                     approval_progress='100%')
+                objs.save()
             return Response({"ok": True},status=status.HTTP_200_OK)
 
 
@@ -164,7 +174,7 @@ class ApprovalView(APIView):
             return Response({"ok": False, "message": "该级管理员已审核"},status=status.HTTP_200_OK)
         else:
             if Approvalobj.item_grade == 2:
-                Approvalobj.approval_progress = '已审核通过'
+                Approvalobj.approval_progress = True
                 EquipmentTimesobj.approval_progress = '100%'
                 Approvalobj.save()
                 EquipmentTimesobj.save()
@@ -180,7 +190,7 @@ class ApprovalView(APIView):
                         EquipmentTimesobj.save()
                         return Response({"ok": True}, status=status.HTTP_200_OK)
                     else:
-                        Approvalobj.approval_progress = '已审核通过'
+                        Approvalobj.approval_progress = True
                         EquipmentTimesobj.approval_progress = '100%'
                         Approvalobj.save()
                         EquipmentTimesobj.save()
