@@ -9,9 +9,14 @@ from AllUser.serializers.UserDataSerializers import OrdinaryUserSerializers,Regu
 # 普通用户
 class OrdinaryUsers(APIView):
     def get(self,request,id):
-        obj = OrdinaryUser.objects.get(id=id)
-        data = OrdinaryUserSerializers(instance=obj,many=False)
-        return Response({"userdata":data.data},status=status.HTTP_200_OK)
+        if id == 0:
+            obj = OrdinaryUser.objects.all()
+            data = OrdinaryUserSerializers(instance=obj, many=True)
+            return Response({"userdata": data.data}, status=status.HTTP_200_OK)
+        else:
+            obj = OrdinaryUser.objects.get(id=id)
+            data = OrdinaryUserSerializers(instance=obj,many=False)
+            return Response({"userdata":data.data},status=status.HTTP_200_OK)
     def put(self,request):
         user = OrdinaryUser.objects.get(id=request.data.get('id'))
         user.realname = request.data.get('realname')
@@ -33,12 +38,20 @@ class OrdinaryUsers(APIView):
 # 普通管理员
 class RegularAdministrator(APIView):
     def get(self,request,id):
-        try:
-            obj = Regular_Administrator.objects.get(id=id)
-        except:
-            return Response({"can_login": False, "message": "用户不存在"}, status=status.HTTP_200_OK)
-        data = Regular_AdministratorSerializers(instance=obj,many=False)
-        return Response({"userdata":data.data},status=status.HTTP_200_OK)
+        if id == 0:
+            try:
+                obj = Regular_Administrator.objects.all()
+            except:
+                return Response({"can_login": False, "message": "用户不存在"}, status=status.HTTP_200_OK)
+            data = Regular_AdministratorSerializers(instance=obj,many=True)
+            return Response({"userdata":data.data},status=status.HTTP_200_OK)
+        else:
+            try:
+                obj = Regular_Administrator.objects.get(id=id)
+            except:
+                return Response({"can_login": False, "message": "用户不存在"}, status=status.HTTP_200_OK)
+            data = Regular_AdministratorSerializers(instance=obj,many=False)
+            return Response({"userdata":data.data},status=status.HTTP_200_OK)
     def put(self,request):
         try:
             user = Regular_Administrator.objects.get(id=request.data.get('id'))
@@ -62,12 +75,20 @@ class RegularAdministrator(APIView):
 # 超管
 class SuperAdministrator(APIView):
     def get(self,request,id):
-        try:
-            obj = Super_Administrator.objects.get(id=id)
-        except:
-            return Response({"can_login": False, "message": "用户不存在"}, status=status.HTTP_200_OK)
-        data = Super_AdministratorSerializers(instance=obj,many=False)
-        return Response({"userdata":data.data},status=status.HTTP_200_OK)
+        if id == 0:
+            try:
+                obj = Super_Administrator.objects.all()
+            except:
+                return Response({"can_login": False, "message": "用户不存在"}, status=status.HTTP_200_OK)
+            data = Super_AdministratorSerializers(instance=obj,many=True)
+            return Response({"userdata":data.data},status=status.HTTP_200_OK)
+        else:
+            try:
+                obj = Super_Administrator.objects.get(id=id)
+            except:
+                return Response({"can_login": False, "message": "用户不存在"}, status=status.HTTP_200_OK)
+            data = Super_AdministratorSerializers(instance=obj,many=False)
+            return Response({"userdata":data.data},status=status.HTTP_200_OK)
     def put(self,request):
         try:
             user = Super_Administrator.objects.get(id=request.data.get('id'))
