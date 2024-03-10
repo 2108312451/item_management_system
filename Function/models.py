@@ -7,6 +7,8 @@ class Notice(models.Model):
     content = models.TextField() #内容
     adminname = models.CharField(max_length=50,default='') #发布者姓名
     times = models.CharField(max_length=50,default='0000-00-00 00:00') #时间
+    oread = models.BooleanField(default=False) #是否已读
+    ns = models.CharField(max_length=50,default='')
 
 #借用物品
 class Lend(models.Model):
@@ -142,3 +144,16 @@ class Appointment(models.Model):
     time21 = models.BooleanField(default=False)
     time22 = models.BooleanField(default=False)
     time23 = models.BooleanField(default=False)
+
+#通知
+class NewNotifications(models.Model):
+    content = models.TextField(default='')
+    times = models.CharField(max_length=50, default='0000-00-00 00:00')  # 时间
+    notname = models.CharField(max_length=50, default='') #姓名
+    oread = models.BooleanField(default=False)
+
+#记录
+class OrNews(models.Model):
+    lens = models.IntegerField(default=0)
+    tf = models.BooleanField(default=False)
+

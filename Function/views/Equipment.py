@@ -8,7 +8,8 @@ from django.http import FileResponse
 from PIL import Image
 import io
 import datetime
-from Function.models import Appointment,EquipmentApproval,EquipmentTimes
+from Items.models import Items
+from Function.models import Appointment,EquipmentApproval,EquipmentTimes,NewNotifications
 from Function.serializers.EquipmentSerializers import EquipmentApprovalSerializers,EquipmentTimesSerializers
 
 # 提交预约申请
@@ -46,15 +47,6 @@ class SubmitApplication(APIView):
                 try:
                     data = Appointment.objects.get(item_id=request.data.get('item_id'),item_name=request.data.get('item_name'),day=i+diff)
                     data.day = i
-                    # # 将字符串解析为日期对象
-                    # current_time = datetime.datetime.strptime(data.time, '%Y-%m-%d')
-                    # # 定义一个 timedelta 对象，表示要加减的天数
-                    # delta = timedelta(days=-diff)  # 加5天，如果要减去天数，将days参数改为负数即可
-                    # # 对日期对象进行加减操作
-                    # new_time = current_time + delta
-                    # # 将结果转换为字符串格式
-                    # new_time_str = new_time.strftime('%Y-%m-%d')
-                    # data.time = new_time_str
                     data.save()
                 except:
                     current_time = datetime.datetime.strptime(time_str, '%Y-%m-%d')
@@ -107,6 +99,11 @@ class SubmitApplication(APIView):
                                                      begintime=begintime, longtime=longtime, item_grade=item_grade,
                                                      approval_progress='100%')
                 objs.save()
+
+            itemobj = Items.objects.get(id=item_id)
+            itemobj.frequency_use += 1
+            itemobj.save()
+
             return Response({"ok": True},status=status.HTTP_200_OK)
 
 
@@ -153,6 +150,10 @@ class SubmitApplication(APIView):
                                                      begintime=begintime, longtime=longtime, item_grade=item_grade,approval_progress='100%')
                 objs.save()
 
+            itemobj = Items.objects.get(id=item_id)
+            itemobj.frequency_use += 1
+            itemobj.save()
+
             return Response({"ok": True}, status=status.HTTP_200_OK)
 
     # 用户获取自己的提交记录
@@ -178,6 +179,16 @@ class ApprovalView(APIView):
                 EquipmentTimesobj.approval_progress = '100%'
                 Approvalobj.save()
                 EquipmentTimesobj.save()
+
+                # 新建通知
+                current_time = datetime.datetime.now()
+                time_str = current_time.strftime('%Y-%m-%d %H:%M:%S')
+
+                obj = NewNotifications.objects.create(
+                    content=f"您的提交的{Approvalobj.lenditem_name}设备使用申请审核已经通过，请按时使用设备，使用后上传照片",
+                    times=time_str, notname=Approvalobj.lenduser_realname)
+                obj.save()
+
                 return Response({"ok":True},status=status.HTTP_200_OK)
             elif Approvalobj.item_grade == 3:
                 if EquipmentTimesobj.privilege_level == privilege_level:
@@ -194,6 +205,16 @@ class ApprovalView(APIView):
                         EquipmentTimesobj.approval_progress = '100%'
                         Approvalobj.save()
                         EquipmentTimesobj.save()
+
+                        # 新建通知
+                        current_time = datetime.datetime.now()
+                        time_str = current_time.strftime('%Y-%m-%d %H:%M:%S')
+
+                        obj = NewNotifications.objects.create(
+                            content=f"您的提交的{Approvalobj.lenditem_name}设备使用申请审核已经通过，请按时使用设备，使用后上传照片",
+                            times=time_str, notname=Approvalobj.lenduser_realname)
+                        obj.save()
+
                         return Response({"ok": True}, status=status.HTTP_200_OK)
 
     def get(self,request):

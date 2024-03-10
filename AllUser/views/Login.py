@@ -5,8 +5,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password,check_password
 from rest_framework_simplejwt.tokens import RefreshToken
 import random
+import datetime
+from datetime import timedelta
 from AllUser.models import OrdinaryUser,Regular_Administrator,Super_Administrator,Codes
 from AllUser.serializers.UserDataSerializers import OrdinaryUserSerializers,Regular_AdministratorSerializers,Super_AdministratorSerializers
+from Function.models import Lend,NewNotifications,EquipmentTimes
 
 # 登录
 # 普通用户
@@ -50,6 +53,47 @@ class OrdinaryUserLoginView(APIView):
                 refresh = RefreshToken.for_user(user)
                 access_token = str(refresh.access_token)
 
+                # 验证物品过期通知
+                user = OrdinaryUser.objects.get(username=request.data.get('username'))
+                realname = user.realname
+                userlendatas = Lend.objects.filter(lenduser_realname=realname)
+                userequipmentatas = EquipmentTimes.objects.filter(username=realname)
+                current_time = datetime.datetime.now()
+                time_str = current_time.strftime('%Y-%m-%d %H:%M:%S')
+
+                # 验证设备过期通知
+                for data in userequipmentatas:
+                    time_objs = datetime.datetime.strptime(data.begintime, '%Y-%m-%d %H:%M:%S')
+                    hours_to_add = data.longtime
+                    new_time_add = time_objs + datetime.timedelta(hours=hours_to_add)
+                    new_time_add_str = new_time_add.strftime('%Y-%m-%d %H:%M:%S')
+
+                    # 将时间字符串转换为datetime对象
+                    time_obj1 = datetime.datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S')
+                    time_obj2 = datetime.datetime.strptime(new_time_add_str, '%Y-%m-%d %H:%M:%S')
+
+                    time_difference = time_obj2 - time_obj1
+                    # 将时间差转换为小时数
+                    hours_difference = time_difference.total_seconds() / 3600
+
+                    if hours_difference <= 0:
+                        pass
+                    elif 0 < hours_difference < 1:
+                        obj = NewNotifications.objects.create(
+                            content=f"您的提交的{data.username}借用申请即将到期，请按时归还物品",
+                            times=time_str, notname=data.username)
+                        obj.save()
+
+                for lend_data in userlendatas:
+                    time_objs = datetime.datetime.strptime(lend_data.lendtime, '%Y-%m-%d %H:%M:%S')
+                    delta = timedelta(days=lend_data.lendday)
+                    new_time = time_objs + delta
+                    new_time_str = new_time.strftime('%Y-%m-%d %H:%M:%S')
+                    if new_time_str == time_str:
+                        obj = NewNotifications.objects.create(
+                            content=f"您的提交的{lend_data.lenditem_name}借用申请即将到期，请按时归还物品",
+                            times=time_str, notname=lend_data.lenduser_realname)
+                        obj.save()
                 return Response({"can_login": True,'token': access_token,'userdata':userdata.data}, status=status.HTTP_200_OK)
             else:
                 return Response({"can_login": False, "message": "密码错误"}, status=status.HTTP_200_OK)
@@ -95,6 +139,49 @@ class Regular_AdministratorLoginView(APIView):
                 # 用户验证成功，生成 JWT 令牌
                 refresh = RefreshToken.for_user(user)
                 access_token = str(refresh.access_token)
+
+                # 验证物品过期通知
+                user = OrdinaryUser.objects.get(username=request.data.get('username'))
+                realname = user.realname
+                userlendatas = Lend.objects.filter(lenduser_realname=realname)
+                userequipmentatas = EquipmentTimes.objects.filter(username=realname)
+                current_time = datetime.datetime.now()
+                time_str = current_time.strftime('%Y-%m-%d %H:%M:%S')
+
+                # 验证设备过期通知
+                for data in userequipmentatas:
+                    time_objs = datetime.datetime.strptime(data.begintime, '%Y-%m-%d %H:%M:%S')
+                    hours_to_add = data.longtime
+                    new_time_add = time_objs + datetime.timedelta(hours=hours_to_add)
+                    new_time_add_str = new_time_add.strftime('%Y-%m-%d %H:%M:%S')
+
+                    # 将时间字符串转换为datetime对象
+                    time_obj1 = datetime.datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S')
+                    time_obj2 = datetime.datetime.strptime(new_time_add_str, '%Y-%m-%d %H:%M:%S')
+
+                    time_difference = time_obj2 - time_obj1
+                    # 将时间差转换为小时数
+                    hours_difference = time_difference.total_seconds() / 3600
+
+                    if hours_difference <= 0:
+                        pass
+                    elif 0 < hours_difference < 1:
+                        obj = NewNotifications.objects.create(
+                            content=f"您的提交的{data.username}借用申请即将到期，请按时归还物品",
+                            times=time_str, notname=data.username)
+                        obj.save()
+
+                for lend_data in userlendatas:
+                    time_objs = datetime.datetime.strptime(lend_data.lendtime, '%Y-%m-%d %H:%M:%S')
+                    delta = timedelta(days=lend_data.lendday)
+                    new_time = time_objs + delta
+                    new_time_str = new_time.strftime('%Y-%m-%d %H:%M:%S')
+                    if new_time_str == time_str:
+                        obj = NewNotifications.objects.create(
+                            content=f"您的提交的{lend_data.lenditem_name}借用申请即将到期，请按时归还物品",
+                            times=time_str, notname=lend_data.lenduser_realname)
+                        obj.save()
+
                 return Response({"can_login": True,'token': access_token,"userdata":userdata.data}, status=status.HTTP_200_OK)
             else:
                 return Response({"can_login": False, "message": "密码错误"}, status=status.HTTP_200_OK)
@@ -125,6 +212,49 @@ class Super_AdministratorLoginView(APIView):
             # 用户验证成功，生成 JWT 令牌
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
+
+            # 验证物品过期通知
+            user = OrdinaryUser.objects.get(username=request.data.get('username'))
+            realname = user.realname
+            userlendatas = Lend.objects.filter(lenduser_realname=realname)
+            userequipmentatas = EquipmentTimes.objects.filter(username=realname)
+            current_time = datetime.datetime.now()
+            time_str = current_time.strftime('%Y-%m-%d %H:%M:%S')
+
+            # 验证设备过期通知
+            for data in userequipmentatas:
+                time_objs = datetime.datetime.strptime(data.begintime, '%Y-%m-%d %H:%M:%S')
+                hours_to_add = data.longtime
+                new_time_add = time_objs + datetime.timedelta(hours=hours_to_add)
+                new_time_add_str = new_time_add.strftime('%Y-%m-%d %H:%M:%S')
+
+                # 将时间字符串转换为datetime对象
+                time_obj1 = datetime.datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S')
+                time_obj2 = datetime.datetime.strptime(new_time_add_str, '%Y-%m-%d %H:%M:%S')
+
+                time_difference = time_obj2 - time_obj1
+                # 将时间差转换为小时数
+                hours_difference = time_difference.total_seconds() / 3600
+
+                if hours_difference <= 0:
+                    pass
+                elif 0 < hours_difference < 1:
+                    obj = NewNotifications.objects.create(
+                        content=f"您的提交的{data.username}借用申请即将到期，请按时归还物品",
+                        times=time_str, notname=data.username)
+                    obj.save()
+
+            for lend_data in userlendatas:
+                time_objs = datetime.datetime.strptime(lend_data.lendtime, '%Y-%m-%d %H:%M:%S')
+                delta = timedelta(days=lend_data.lendday)
+                new_time = time_objs + delta
+                new_time_str = new_time.strftime('%Y-%m-%d %H:%M:%S')
+                if new_time_str == time_str:
+                    obj = NewNotifications.objects.create(
+                        content=f"您的提交的{lend_data.lenditem_name}借用申请即将到期，请按时归还物品",
+                        times=time_str, notname=lend_data.lenduser_realname)
+                    obj.save()
+
             return Response({"can_login": True,'token': access_token,"userdata":userdata.data}, status=status.HTTP_200_OK)
         else:
             return Response({"can_login": False, "message": "密码错误"}, status=status.HTTP_200_OK)

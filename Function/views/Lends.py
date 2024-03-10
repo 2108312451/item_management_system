@@ -7,7 +7,7 @@ from django.http import FileResponse
 import datetime
 import io
 from PIL import Image
-from Function.models import Lend,Approval
+from Function.models import Lend,Approval,NewNotifications
 from Function.serializers.LendSerializers import LendSerializers,ApprovalSerializers
 from Items.models import Items
 
@@ -21,6 +21,7 @@ class LendView(APIView):
         # 物品等级判断，1级直接上传图片
         if request.data.get('lenditem_grade') == '1':
             itemobj = Items.objects.get(id=request.data.get('lenditem_id'))
+            itemobj.frequency_use += 1
             x = int(request.data.get('lendnumber'))
             if x > itemobj.inventory:
                 return Response({"message":"库存不足","ok_lend":False},status=status.HTTP_200_OK)
@@ -62,6 +63,7 @@ class LendView(APIView):
         elif request.data.get('lenditem_grade') == '2' or request.data.get('lenditem_grade') == '3':
 
             itemobj = Items.objects.get(id=request.data.get('lenditem_id'))
+            itemobj.frequency_use += 1
             x = int(request.data.get('lendnumber'))
             if x > itemobj.inventory:
                 return Response({"message": "库存不足", "ok_lend": False}, status=status.HTTP_200_OK)
@@ -121,6 +123,13 @@ class ApprovalView(APIView):
                 lendobj.approval_progress = '100%'
                 Approvalobj.save()
                 lendobj.save()
+
+                # 新建通知
+                current_time = datetime.datetime.now()
+                time_str = current_time.strftime('%Y-%m-%d %H:%M:%S')
+                obj = NewNotifications.objects.create(content=f"您的提交的{Approvalobj.lenditem_name}物品借用审核已经通过，请及时取走物品，归还后上传照片", times=time_str, notname=Approvalobj.lenduser_realname)
+                obj.save()
+
                 return Response({"ok":True},status=status.HTTP_200_OK)
             elif Approvalobj.lenditem_grade == 3:
                 if lendobj.approved_adminname == privilege_level:
@@ -137,6 +146,16 @@ class ApprovalView(APIView):
                         lendobj.approval_progress = '100%'
                         Approvalobj.save()
                         lendobj.save()
+
+                        # 新建通知
+                        current_time = datetime.datetime.now()
+                        time_str = current_time.strftime('%Y-%m-%d %H:%M:%S')
+
+                        obj = NewNotifications.objects.create(
+                            content=f"您的提交的{Approvalobj.lenditem_name}物品借用审核已经通过，请及时取走物品，归还后上传照片",
+                            times=time_str, notname=Approvalobj.lenduser_realname)
+                        obj.save()
+
                         return Response({"ok": True}, status=status.HTTP_200_OK)
 
     def get(self,request):

@@ -4,6 +4,7 @@ from rest_framework import status
 from Function.models import Collections
 from Function.serializers.CollectionSerializers import CollectionSerializers
 
+#收藏
 class CollectionView(APIView):
     def post(self,request):
         try:

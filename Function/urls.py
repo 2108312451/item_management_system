@@ -1,5 +1,5 @@
 from django.urls import path, include
-from Function.views import Notices,Lends,Returns,Collections,RepairAndFeedback,HelpCenters,Equipment
+from Function.views import Notices,Lends,Returns,Collections,RepairAndFeedback,HelpCenters,Equipment,NewNotification
 
 urlpatterns = [
     path("notice/",Notices.NoticeView.as_view(),name='notice'),
@@ -33,4 +33,7 @@ urlpatterns = [
     path("equipmentapproval/",Equipment.ApprovalView.as_view(),name='equipmentapproval'), #审批
     path("equipmentpic/", Equipment.UploadImages.as_view(), name='equipmentpic'),  # 设备上传图片
     path("equipmentpic/<int:id>", Equipment.GetPicture.as_view(), name='getequipmentpic'),  # 获取设备上传图片
+#通知
+    path("newnotification/<str:username>",NewNotification.NewNotificationView.as_view(),name='newnotification'), #是否存在未读通知
+    path("newnotification/",NewNotification.NewNotificationView.as_view(),name='newnotification') #获取通知
 ]
