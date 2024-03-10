@@ -222,7 +222,7 @@ class ApprovalView(APIView):
         approvaldata = EquipmentApprovalSerializers(instance=data,many=True)
         return Response({"data":approvaldata.data},status=status.HTTP_200_OK)
 
-# 2/3级设备审批通过后上传图片
+# 设备借用完上传图片
 class UploadImages(APIView):
     def post(self,request):
         equipmentid = request.data.get('equipmentid')
@@ -232,6 +232,10 @@ class UploadImages(APIView):
         image_file = ContentFile(image_data.read())
         # 保存图片文件到磁盘上的指定路径（比如 static/images 文件夹）
         default_storage.save('static/Equipmentimage/' + str(equipmentid) + '_equipment.jpg', image_file)
+
+        equipmentobj = EquipmentTimes.objects.get(id=request.data.get('equipmentid'))
+        equipmentobj.oretuen = True
+        equipmentobj.save()
         return Response({"ok_equipment": True}, status=status.HTTP_200_OK)
 
 # 获取设备上传图片

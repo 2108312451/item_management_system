@@ -21,6 +21,7 @@ class Lend(models.Model):
     lendday = models.IntegerField(default=0) #借出天数
     approval_progress = models.CharField(max_length=50,default='0%') #进度
     approved_adminname = models.IntegerField(default=-1) #已审批管理员的等级
+    oretuen = models.BooleanField(default=False) #是否归还
 
 
 # 借出审批表
@@ -101,6 +102,7 @@ class EquipmentTimes(models.Model):
     item_grade = models.IntegerField(default=0)  # 设备等级
     approval_progress = models.CharField(max_length=50, default='0%')  # 进度
     privilege_level = models.IntegerField(default=-1)  # 已审批管理员的等级
+    oretuen = models.BooleanField(default=False)  # 是否归还
 
 # 设备预约管理员审批
 class EquipmentApproval(models.Model):

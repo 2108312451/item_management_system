@@ -7,7 +7,9 @@ import datetime
 from Function.models import Returns
 from Function.serializers.ReturnSerializers import ReturnSerializers
 from Items.models import Items
+from Function.models import Lend
 
+#物品归还
 class ReturnView(APIView):
     def post(self,request):
         current_time = datetime.datetime.now()
@@ -25,6 +27,10 @@ class ReturnView(APIView):
         itemobj = Items.objects.get(id=request.data.get('item_id'))
         itemobj.inventory += int(request.data.get('number'))
         itemobj.save()
+
+        lendobj = Lend.objects.get(lenditem_id=request.data.get('item_id'))
+        lendobj.oretuen = True
+        lendobj.save()
 
         return Response({"ok_return":True},status=status.HTTP_200_OK)
     def get(self,request,user_realname):
