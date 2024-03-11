@@ -9,6 +9,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from PIL import Image
 import io
+import os
 from django.http import FileResponse
 from io import BytesIO
 from openpyxl import load_workbook
@@ -60,12 +61,28 @@ class ItemOperateView(APIView):
 
     #修改物品信息
     def put(self,request):
-        image_data = request.data.get('image')
-        # 将图片数据转换为文件对象
-        image_file = ContentFile(image_data.read())
-        # 保存图片文件到磁盘上的指定路径（比如 static/images 文件夹）
-        default_storage.save('static/images/' + request.data.get('item_name') + '.jpg', image_file)
+        try:
+            # 定义路径和文件名
+            folder_path = 'static/images/'
+            file_name = request.data.get('item_name') + '.jpg'
+            file_path = folder_path + file_name
 
+            # 判断文件是否存在
+            if os.path.exists(file_path):
+                # 存在同名文件，删除文件
+                os.remove(file_path)
+            else:
+                pass
+            image_data = request.data.get('image')
+            # 将图片数据转换为文件对象
+            image_file = ContentFile(image_data.read())
+            # 保存图片文件到磁盘上的指定路径（比如 static/images 文件夹）
+            default_storage.save('static/images/' + request.data.get('item_name') + '.jpg', image_file)
+            obj = Items.objects.get(id=request.data.get("id"))
+            obj.pictureUrl = image_file  # 图片地址（单独传入图片）
+            obj.save()
+        except:
+            pass
         obj = Items.objects.get(id=request.data.get("id"))
         obj.item_name = request.data.get('item_name')
         obj.item_code = request.data.get('item_code')
@@ -78,7 +95,6 @@ class ItemOperateView(APIView):
         obj.location = request.data.get('location')
         obj.max_quantity = request.data.get('max_quantity')
         obj.instructions = request.data.get('instructions')
-        obj.pictureUrl = image_file # 图片地址（单独传入图片）
         obj.approval_classification = request.data.get('approval_classification')
 
         obj.save()
