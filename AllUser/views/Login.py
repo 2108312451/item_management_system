@@ -141,7 +141,7 @@ class Regular_AdministratorLoginView(APIView):
                 access_token = str(refresh.access_token)
 
                 # 验证物品过期通知
-                user = OrdinaryUser.objects.get(username=request.data.get('username'))
+                user = Regular_Administrator.objects.get(username=request.data.get('username'))
                 realname = user.realname
                 userlendatas = Lend.objects.filter(lenduser_realname=realname)
                 userequipmentatas = EquipmentTimes.objects.filter(username=realname)
@@ -214,7 +214,7 @@ class Super_AdministratorLoginView(APIView):
             access_token = str(refresh.access_token)
 
             # 验证物品过期通知
-            user = OrdinaryUser.objects.get(username=request.data.get('username'))
+            user = Super_Administrator.objects.get(username=request.data.get('username'))
             realname = user.realname
             userlendatas = Lend.objects.filter(lenduser_realname=realname)
             userequipmentatas = EquipmentTimes.objects.filter(username=realname)
