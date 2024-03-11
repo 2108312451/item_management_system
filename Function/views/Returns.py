@@ -28,7 +28,7 @@ class ReturnView(APIView):
         itemobj.inventory += int(request.data.get('number'))
         itemobj.save()
 
-        lendobj = Lend.objects.get(lenditem_id=request.data.get('item_id'))
+        lendobj = Lend.objects.get(id=request.data.get('lenditem_id'))
         lendobj.oretuen = True
         lendobj.save()
 
