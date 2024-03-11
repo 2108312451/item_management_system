@@ -62,25 +62,28 @@ class ItemOperateView(APIView):
     #修改物品信息
     def put(self,request):
         try:
-            # 定义路径和文件名
-            folder_path = 'static/images/'
-            file_name = request.data.get('item_name') + '.jpg'
-            file_path = folder_path + file_name
+            image_data = request.data.get('image')
+            if image_data:
+                # 定义路径和文件名
+                folder_path = 'static/images/'
+                file_name = request.data.get('item_name') + '.jpg'
+                file_path = folder_path + file_name
 
-            # 判断文件是否存在
-            if os.path.exists(file_path):
-                # 存在同名文件，删除文件
-                os.remove(file_path)
+                # 判断文件是否存在
+                if os.path.exists(file_path):
+                    # 存在同名文件，删除文件
+                    os.remove(file_path)
+                else:
+                    pass
+                # 将图片数据转换为文件对象
+                image_file = ContentFile(image_data.read())
+                # 保存图片文件到磁盘上的指定路径（比如 static/images 文件夹）
+                default_storage.save('static/images/' + request.data.get('item_name') + '.jpg', image_file)
+                obj = Items.objects.get(id=request.data.get("id"))
+                obj.pictureUrl = image_file  # 图片地址（单独传入图片）
+                obj.save()
             else:
                 pass
-            image_data = request.data.get('image')
-            # 将图片数据转换为文件对象
-            image_file = ContentFile(image_data.read())
-            # 保存图片文件到磁盘上的指定路径（比如 static/images 文件夹）
-            default_storage.save('static/images/' + request.data.get('item_name') + '.jpg', image_file)
-            obj = Items.objects.get(id=request.data.get("id"))
-            obj.pictureUrl = image_file  # 图片地址（单独传入图片）
-            obj.save()
         except:
             pass
         try:
