@@ -83,21 +83,23 @@ class ItemOperateView(APIView):
             obj.save()
         except:
             pass
-        obj = Items.objects.get(id=request.data.get("id"))
-        obj.item_name = request.data.get('item_name')
-        obj.item_code = request.data.get('item_code')
-        obj.value = request.data.get('value')
-        obj.specifications = request.data.get('specifications')
-        obj.category = request.data.get('category')
-        obj.brand = request.data.get('brand')
-        obj.inventory = request.data.get('inventory')
-        obj.campus = request.data.get('campus')
-        obj.location = request.data.get('location')
-        obj.max_quantity = request.data.get('max_quantity')
-        obj.instructions = request.data.get('instructions')
-        obj.approval_classification = request.data.get('approval_classification')
-
-        obj.save()
+        try:
+            obj = Items.objects.get(id=request.data.get("id"))
+            obj.item_name = request.data.get('item_name')
+            obj.item_code = request.data.get('item_code')
+            obj.value = request.data.get('value')
+            obj.specifications = request.data.get('specifications')
+            obj.category = request.data.get('category')
+            obj.brand = request.data.get('brand')
+            obj.inventory = request.data.get('inventory')
+            obj.campus = request.data.get('campus')
+            obj.location = request.data.get('location')
+            obj.max_quantity = request.data.get('max_quantity')
+            obj.instructions = request.data.get('instructions')
+            obj.approval_classification = request.data.get('approval_classification')
+            obj.save()
+        except:
+            pass
         return Response({"ok_put":True},status=status.HTTP_200_OK)
 
 # 获取表数据
