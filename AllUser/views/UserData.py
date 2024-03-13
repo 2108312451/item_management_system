@@ -57,11 +57,14 @@ class RegularAdministrator(APIView):
             user = Regular_Administrator.objects.get(id=request.data.get('id'))
         except:
             return Response({"can_login": False, "message": "用户不存在"}, status=status.HTTP_200_OK)
-        user.realname = request.data.get('realname')
-        user.username = request.data.get('username')
-        user.password = make_password(request.data.get('password'))
-        user.phone = request.data.get('phone')
-        user.status = request.data.get('status')
+        try:
+            passwords = request.data.get('username')
+            user.username = passwords
+            user.password = make_password(request.data.get('password'))
+        except:
+            user.realname = request.data.get('realname')
+            user.phone = request.data.get('phone')
+            user.status = request.data.get('status')
         user.save()
         return Response({"ok_modify": True}, status=status.HTTP_200_OK)
     def delete(self,request,id):
