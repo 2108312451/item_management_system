@@ -3,6 +3,7 @@ from Function.views import Notices,Lends,Returns,Collections,RepairAndFeedback,H
 
 urlpatterns = [
     path("notice/",Notices.NoticeView.as_view(),name='notice'),
+    path("notice/<str:username>",Notices.NoticeView.as_view(),name='notice'),
     path("lends/",Lends.LendView.as_view(),name='lend'),
     path("lends/<str:lenduser_realname>",Lends.LendView.as_view(),name='lend'),
     path("approval/",Lends.ApprovalView.as_view(),name='approval'),

@@ -49,7 +49,6 @@ class NoticeView(APIView):
             for da in obj:
                 da.oread = True
                 da.save()
-            obj.save()
             return Response({"noticedata":noticedata.data},status=status.HTTP_200_OK)
         else:
             return Response({"message": "pk值为空"}, status=status.HTTP_200_OK)

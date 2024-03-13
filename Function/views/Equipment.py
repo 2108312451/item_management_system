@@ -27,7 +27,7 @@ class SubmitApplication(APIView):
         # 将结果转换为字符串格式
         time_strs = new_time.strftime('%Y-%m-%d')
 
-        time_strs = '2024-03-10'
+        # time_strs = '2024-03-10'
 
         # 时间更迭
         one = Appointment.objects.get(item_id=request.data.get('item_id'),item_name=request.data.get('item_name'),day=1)
@@ -38,7 +38,7 @@ class SubmitApplication(APIView):
             diff = (date_obj1 - date_obj2).days
 
             #删除旧日期
-            for i in range(1,diff+1):
+            for i in range(1,abs(diff)+1):
                 oldata = Appointment.objects.get(item_id=request.data.get('item_id'),item_name=request.data.get('item_name'),day=i)
                 oldata.delete()
 
