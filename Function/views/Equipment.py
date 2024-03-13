@@ -38,14 +38,19 @@ class SubmitApplication(APIView):
             diff = (date_obj1 - date_obj2).days
 
             #删除旧日期
-            for i in range(1,abs(diff)+1):
+            for i in range(1,abs(diff)+2):
                 oldata = Appointment.objects.get(item_id=request.data.get('item_id'),item_name=request.data.get('item_name'),day=i)
                 oldata.delete()
 
             #更该添加新日期
             for i in range(1,6):
                 try:
-                    data = Appointment.objects.get(item_id=request.data.get('item_id'),item_name=request.data.get('item_name'),day=i+diff)
+                    data = Appointment.objects.get(item_id=request.data.get('item_id'),item_name=request.data.get('item_name'),day=i)
+                    current_time = datetime.datetime.strptime(time_str, '%Y-%m-%d')
+                    delta = timedelta(days=i)
+                    newdata = current_time + delta
+                    new_time_str = newdata.strftime('%Y-%m-%d')
+                    data.time = new_time_str
                     data.day = i
                     data.save()
                 except:
