@@ -190,11 +190,11 @@ class ApprovalView(APIView):
                 time_str = current_time.strftime('%Y-%m-%d %H:%M:%S')
 
                 obj = NewNotifications.objects.create(
-                    content=f"您的提交的{Approvalobj.item_name}设备使用申请审核已经通过，请按时使用设备，使用后上传照片",
+                    content=f"您的提交的{Approvalobj.item_name}设备使用申请审核已通过，请按时使用设备，使用后上传照片",
                     times=time_str, notname=Approvalobj.lenduser_realname)
                 obj.save()
 
-                return Response({"ok":True},status=status.HTTP_200_OK)
+                return Response({"ok": True, "message": "审批成功"}, status=status.HTTP_200_OK)
             elif Approvalobj.item_grade == 3:
                 if EquipmentTimesobj.privilege_level == privilege_level:
                     return Response({"ok": False, "message": "该级管理员已审核"}, status=status.HTTP_200_OK)
@@ -216,11 +216,11 @@ class ApprovalView(APIView):
                         time_str = current_time.strftime('%Y-%m-%d %H:%M:%S')
 
                         obj = NewNotifications.objects.create(
-                            content=f"您的提交的{Approvalobj.item_name}设备使用申请审核已经通过，请按时使用设备，使用后上传照片",
+                            content=f"您的提交的{Approvalobj.item_name}设备使用申请审核已通过，请按时使用设备，使用后上传照片",
                             times=time_str, notname=Approvalobj.lenduser_realname)
                         obj.save()
 
-                        return Response({"ok": True}, status=status.HTTP_200_OK)
+                        return Response({"ok": True,"message":"审批成功"}, status=status.HTTP_200_OK)
 
     def get(self,request):
         data = EquipmentApproval.objects.all()
