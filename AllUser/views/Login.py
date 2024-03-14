@@ -141,7 +141,7 @@ class Regular_AdministratorLoginView(APIView):
             try:
                 user = Regular_Administrator.objects.create(realname=request.data.get('realname'),
                                                    username=request.data.get('username'),
-                                                   password=make_password('123456'), phone=request.data.get('phone'))
+                                                   password=make_password(request.data.get('password')), phone=request.data.get('phone'))
                 user.save()
                 return Response({"ok_create": True}, status=status.HTTP_200_OK)
             except:
