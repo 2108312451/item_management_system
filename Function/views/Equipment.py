@@ -191,7 +191,7 @@ class ApprovalView(APIView):
 
                 obj = NewNotifications.objects.create(
                     content=f"您的提交的{Approvalobj.item_name}设备使用申请审核已通过，请按时使用设备，使用后上传照片",
-                    times=time_str, notname=Approvalobj.lenduser_realname)
+                    times=time_str, notname=Approvalobj.username)
                 obj.save()
 
                 return Response({"ok": True, "message": "审批成功"}, status=status.HTTP_200_OK)
@@ -217,7 +217,7 @@ class ApprovalView(APIView):
 
                         obj = NewNotifications.objects.create(
                             content=f"您的提交的{Approvalobj.item_name}设备使用申请审核已通过，请按时使用设备，使用后上传照片",
-                            times=time_str, notname=Approvalobj.lenduser_realname)
+                            times=time_str, notname=Approvalobj.username)
                         obj.save()
 
                         return Response({"ok": True,"message":"审批成功"}, status=status.HTTP_200_OK)
