@@ -216,7 +216,7 @@ class ApprovalView(APIView):
                         time_str = current_time.strftime('%Y-%m-%d %H:%M:%S')
 
                         obj = NewNotifications.objects.create(
-                            content=f"您的提交的{Approvalobj.lenditem_name}设备使用申请审核已经通过，请按时使用设备，使用后上传照片",
+                            content=f"您的提交的{Approvalobj.item_name}设备使用申请审核已经通过，请按时使用设备，使用后上传照片",
                             times=time_str, notname=Approvalobj.lenduser_realname)
                         obj.save()
 
