@@ -214,7 +214,7 @@ class MoreAdd(APIView):
             first_row = 0
 
             for row in sheet.iter_rows(values_only=True):
-                if first_row<2:
+                if first_row<1:
                     first_row += 1
                     continue  # 跳过第一行
 
@@ -248,6 +248,33 @@ class MoreAdd(APIView):
                 }
                 obj = Items.objects.create(**data)
                 obj.save()
+
+            #入库
+                # 获取当前时间
+                current_time = datetime.datetime.now()
+                # 将时间转换为字符串
+                time_str = current_time.strftime('%Y-%m-%d %H:%M:%S')
+                warehous = Warehousing.objects.create(item_name=row[1],
+                                                      item_code=row[2],
+                                                      category=row[5],
+                                                      brand=row[6],
+                                                      numbers=row[7],
+                                                      approval_classification=row[12],
+                                                      times=time_str)
+
+                warehous.save()
+                if row[5] == '设备':
+                    # 获取当前日期
+                    current_date = datetime.datetime.now().date()
+                    # 创建未来5天预约时间段
+                    for i in range(1, 6):
+                        # 将日期加一天
+                        next_day = current_date + datetime.timedelta(days=i)
+                        # 将日期转换为字符串
+                        date_str = next_day.strftime('%Y-%m-%d')
+                        obj = Appointment.objects.create(item_id=obj.id, item_name=obj.item_name, time=date_str,
+                                                         day=i)
+                        obj.save()
 
             return Response({'ok_create': True},status=status.HTTP_200_OK)
         except:
