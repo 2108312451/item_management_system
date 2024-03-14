@@ -15,32 +15,49 @@ from Function.models import Lend,NewNotifications,EquipmentTimes
 # 普通用户
 class OrdinaryUserLoginView(APIView):
     def post(self,request):
-        # 注册
+
         if request.data.get('pk') == 0:
-            is_exists = OrdinaryUser.objects.filter(username=request.data.get('username')).exists()
-            if is_exists:
-                return Response({"ok_create": False,"message":"用户名重复"}, status=status.HTTP_200_OK)
+            # 注册
+            if request.data.get('password') != None:
+                is_exists = OrdinaryUser.objects.filter(username=request.data.get('username')).exists()
+                if is_exists:
+                    return Response({"ok_create": False,"message":"用户名重复"}, status=status.HTTP_200_OK)
 
-            try:
-                # 对比邀请码 # 获取表中最后一条数据
-                last_record = Codes.objects.last()
+                try:
+                    # 对比邀请码 # 获取表中最后一条数据
+                    last_record = Codes.objects.last()
 
-                if last_record:
-                    pass
-                else:
-                    return Response({"can_login": False,"message":"邀请码为空"}, status=status.HTTP_200_OK)
+                    if last_record:
+                        pass
+                    else:
+                        return Response({"can_login": False,"message":"邀请码为空"}, status=status.HTTP_200_OK)
 
-                if last_record.Code != request.data.get('code'):
-                    return Response({"can_login": False,"message":"邀请码错误"},status=status.HTTP_200_OK)
+                    if last_record.Code != request.data.get('code'):
+                        return Response({"can_login": False,"message":"邀请码错误"},status=status.HTTP_200_OK)
 
-                user = OrdinaryUser.objects.create(realname=request.data.get('realname'),
-                                                   username=request.data.get('username'),
-                                                   password=make_password(request.data.get('password')),
-                                                   phone=request.data.get('phone'), group=request.data.get('group'))
-                user.save()
-                return Response({"ok_create": True}, status=status.HTTP_200_OK)
-            except:
-                return Response({"ok_create": False,"message":"注册失败"}, status=status.HTTP_200_OK)
+                    user = OrdinaryUser.objects.create(realname=request.data.get('realname'),
+                                                       username=request.data.get('username'),
+                                                       password=make_password(request.data.get('password')),
+                                                       phone=request.data.get('phone'), group=request.data.get('group'))
+                    user.save()
+                    return Response({"ok_create": True}, status=status.HTTP_200_OK)
+                except:
+                    return Response({"ok_create": False,"message":"注册失败"}, status=status.HTTP_200_OK)
+            #添加
+            else:
+                is_exists = OrdinaryUser.objects.filter(username=request.data.get('username')).exists()
+                if is_exists:
+                    return Response({"ok_create": False, "message": "用户名重复"}, status=status.HTTP_200_OK)
+
+                try:
+                    user = OrdinaryUser.objects.create(realname=request.data.get('realname'),
+                                                       username=request.data.get('username'),
+                                                       password=make_password('123456'),
+                                                       phone=request.data.get('phone'), group=request.data.get('group'))
+                    user.save()
+                    return Response({"ok_create": True}, status=status.HTTP_200_OK)
+                except:
+                    return Response({"ok_create": False, "message": "添加失败"}, status=status.HTTP_200_OK)
         # 登录
         elif request.data.get('pk') == 1:
             try:
