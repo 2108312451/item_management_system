@@ -21,10 +21,14 @@ class OrdinaryUsers(APIView):
         user = OrdinaryUser.objects.get(id=request.data.get('id'))
         user.realname = request.data.get('realname')
         user.username = request.data.get('username')
-        user.password = make_password(request.data.get('password'))
         user.phone = request.data.get('phone')
         user.group = request.data.get('group')
         user.status = request.data.get('status')
+        password = request.data.get('password')
+        if password:
+            user.password = make_password(request.data.get('password'))
+        else:
+            pass
         user.save()
         return Response({"ok_modify": True}, status=status.HTTP_200_OK)
     def delete(self,request,id):
