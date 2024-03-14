@@ -246,8 +246,8 @@ class MoreAdd(APIView):
                     'instructions': row[11],
                     'approval_classification': row[12],
                 }
-                obj = Items.objects.create(**data)
-                obj.save()
+                objs = Items.objects.create(**data)
+                objs.save()
 
             #入库
                 # 获取当前时间
@@ -272,7 +272,7 @@ class MoreAdd(APIView):
                         next_day = current_date + datetime.timedelta(days=i)
                         # 将日期转换为字符串
                         date_str = next_day.strftime('%Y-%m-%d')
-                        obj = Appointment.objects.create(item_id=obj.id, item_name=obj.item_name, time=date_str,
+                        obj = Appointment.objects.create(item_id=objs.id, item_name=objs.item_name, time=date_str,
                                                          day=i)
                         obj.save()
 
