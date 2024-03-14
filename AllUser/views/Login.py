@@ -33,7 +33,10 @@ class OrdinaryUserLoginView(APIView):
                 if last_record.Code != request.data.get('code'):
                     return Response({"can_login": False,"message":"邀请码错误"},status=status.HTTP_200_OK)
 
-                user = OrdinaryUser.objects.create(realname = request.data.get('realname'),username = request.data.get('username'),password=make_password(request.data.get('password')),phone=request.data.get('phone'),group=request.data.get('group'))
+                user = OrdinaryUser.objects.create(realname=request.data.get('realname'),
+                                                   username=request.data.get('username'),
+                                                   password=make_password(request.data.get('password')),
+                                                   phone=request.data.get('phone'), group=request.data.get('group'))
                 user.save()
                 return Response({"ok_create": True}, status=status.HTTP_200_OK)
             except:

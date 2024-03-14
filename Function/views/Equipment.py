@@ -68,9 +68,9 @@ class SubmitApplication(APIView):
             username = request.data.get('username')
             item_grade = request.data.get('item_grade')
 
-            days = request.data.get('days') #第几天
-            beginhour = request.data.get('beginhour')  #第几个小时
-            endhour = request.data.get('endhour')
+            days = int(request.data.get('days')) #第几天
+            beginhour = int(request.data.get('beginhour'))  #第几个小时
+            endhour = int(request.data.get('endhour'))
             longtime = endhour - beginhour  #时长
 
             begintime = str((current_times + timedelta(days=days)).strftime('%Y-%m-%d')) + str(' ' + str(beginhour) + ':00:00')
@@ -120,9 +120,9 @@ class SubmitApplication(APIView):
             username = request.data.get('username')
             item_grade = request.data.get('item_grade')
 
-            days = request.data.get('days')  # 第几天
-            beginhour = request.data.get('beginhour')  # 第几个小时
-            endhour = request.data.get('endhour')
+            days = int(request.data.get('days'))  # 第几天
+            beginhour = int(request.data.get('beginhour'))  # 第几个小时
+            endhour = int(request.data.get('endhour'))
             longtime = endhour - beginhour  # 时长
 
             begintime = str((current_times + timedelta(days=days)).strftime('%Y-%m-%d')) + str(
