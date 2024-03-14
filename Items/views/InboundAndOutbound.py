@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 import datetime
 from Items.models import Items,Warehousing,Outbound
-from Function.models import Appointment
+from Function.models import Appointment,Collections
 from Items.serializers.ItemsDataSerializers import ItemsSerializers,WarehousingSerializers,OutboundSerializers
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -104,6 +104,15 @@ class ItemOperateView(APIView):
         except:
             pass
         return Response({"ok_put":True},status=status.HTTP_200_OK)
+
+    def get(self,request,itemid,username):
+        itemobj = Items.objects.get(id=itemid)
+        itemdata = ItemsSerializers(instance=itemobj,many=False)
+        exists = Collections.objects.filter(item_id=itemid, username=username).exists()
+        colloid = 0
+        if exists:
+            colloid = Collections.objects.get(item_id=itemid, username=username).id
+        return Response({"itemdata":itemdata.data,"collection":exists,"colloid":colloid})
 
 # 获取表数据
 class GetItemData(APIView):

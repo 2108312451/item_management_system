@@ -51,6 +51,7 @@ class OrdinaryUserLoginView(APIView):
             if is_matched:
                 if user.status == False:
                     return Response({"can_login": False, "message": "账号禁止登录"}, status=status.HTTP_200_OK)
+
                 userdata = OrdinaryUserSerializers(instance=user,many=False)
                 # 用户验证成功，生成 JWT 令牌
                 refresh = RefreshToken.for_user(user)
