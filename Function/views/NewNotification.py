@@ -19,13 +19,20 @@ class NewNotificationView(APIView):
             return Response({"read":False},status=status.HTTP_200_OK)
 
     def post(self,request):
-        try:
-            username = request.data.get('username')
-            datas = NewNotifications.objects.filter(notname=username)
-            data = NewNotificationSerializers(instance=datas,many=True)
-            for data in datas:
-                data.oread = True
-            datas.save()
-            return Response({"data":data.data},status=status.HTTP_200_OK)
-        except:
-            return Response({"message": "用户姓名不存在"}, status=status.HTTP_200_OK)
+        if request.data.get('pk') == 0:
+            try:
+                username = request.data.get('username')
+                datas = NewNotifications.objects.filter(notname=username)
+                data = NewNotificationSerializers(instance=datas,many=True)
+                return Response({"data":data.data},status=status.HTTP_200_OK)
+            except:
+                return Response({"message": "用户姓名不存在"}, status=status.HTTP_200_OK)
+        else:
+            try:
+                datas = NewNotifications.objects.get(id=id)
+                data = NewNotificationSerializers(instance=datas,many=False)
+                datas.oread = True
+                datas.save()
+                return Response({"data":data.data},status=status.HTTP_200_OK)
+            except:
+                return Response({"message": "用户姓名不存在"}, status=status.HTTP_200_OK)
