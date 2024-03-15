@@ -89,7 +89,7 @@ class SubmitApplication(APIView):
             daydata.save()
 
             # 管理员审批表
-            if item_grade != 1:
+            if item_grade != '1':
                 objs = EquipmentTimes.objects.create(item_id=item_id, item_name=item_name, adress=adress,
                                                      username=username,
                                                      begintime=begintime, longtime=longtime, item_grade=item_grade)
@@ -140,7 +140,7 @@ class SubmitApplication(APIView):
             daydata.save()
 
             # 管理员审批表
-            if item_grade != 1:
+            if item_grade != '1':
                 objs = EquipmentTimes.objects.create(item_id=item_id, item_name=item_name, adress=adress,
                                                      username=username,
                                                      begintime=begintime, longtime=longtime, item_grade=item_grade)
